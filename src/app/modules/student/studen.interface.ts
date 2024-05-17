@@ -9,22 +9,32 @@ export type Guardian = {
   motherContactNo: string;
 };
 
-export type Name = {
+export type UserName = {
   firstName: string;
   middleName: string;
   lastName: string;
 };
 
+export type LocalGuardian = {
+  name: string;
+  occupation: string;
+  contactNo: string;
+  address: string;
+};
+
 export type Student = {
   id: string;
-  name: Name;
+  name: UserName;
   gender: 'male' | 'female' | 'other';
   email: string;
-  dethOfBirth: string;
+  dethOfBirth?: string;
   contactNumber: string;
   emergencyContactNo: string;
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   presentAddress: string;
   permanentAddress: string;
   guardian: Guardian;
+  localguardian: LocalGuardian;
+  profileImg?: string;
+  isActive: 'active' | 'block';
 };
