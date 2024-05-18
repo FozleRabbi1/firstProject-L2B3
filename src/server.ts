@@ -15,5 +15,3 @@ async function main() {
   }
 }
 main();
-// fozlerabbishuvo
-// 6G1ozScccglhbdF9
