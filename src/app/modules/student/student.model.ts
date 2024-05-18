@@ -2,13 +2,26 @@ import { Schema, model } from 'mongoose';
 import { Guardian, LocalGuardian, Student, UserName } from './studen.interface';
 
 const studentNameSchema = new Schema<UserName>({
-  firstName: { type: String, required: [true, 'First name is required'] },
-  middleName: { type: String },
-  lastName: { type: String, required: [true, 'Last name is required'] },
+  firstName: {
+    type: String,
+    required: [true, 'First name is required'],
+    trim: true,
+    maxlength: [10, 'name can not be more then 10 character'],
+  },
+  middleName: { type: String, trim: true },
+  lastName: {
+    type: String,
+    trim: true,
+    required: [true, 'Last name is required'],
+  },
 });
 
 const studentGuardianSchema = new Schema<Guardian>({
-  fatherName: { type: String, required: [true, 'fatherName is required'] },
+  fatherName: {
+    type: String,
+    trim: true,
+    required: [true, 'fatherName is required'],
+  },
   fatherOcupation: {
     type: String,
     required: [true, 'fatherOcupation is required'],
@@ -36,7 +49,7 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 });
 
 const studentSchema = new Schema<Student>({
-  id: { type: String, required: [true, "Id is required"], unique: true },
+  id: { type: String, required: [true, 'Id is required'], unique: true },
   name: {
     type: studentNameSchema,
     required: [true, 'eta to mamar barir abdar na, je tumi nam diba na'],
