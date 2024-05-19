@@ -1,15 +1,15 @@
 export type Guardian = {
   fatherName: string;
-  fatherOcupation: string;
+  fatherOccupation: string;
   fatherContactNo: string;
   motherName: string;
-  motherOcupation: string;
+  motherOccupation: string;
   motherContactNo: string;
 };
 
 export type UserName = {
   firstName: string;
-  middleName: string;
+  middleName?: string;
   lastName: string;
 };
 

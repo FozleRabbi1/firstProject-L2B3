@@ -22,7 +22,7 @@ const studentGuardianSchema = new Schema<Guardian>({
     trim: true,
     required: [true, 'fatherName is required'],
   },
-  fatherOcupation: {
+  fatherOccupation: {
     type: String,
     required: [true, 'fatherOcupation is required'],
   },
@@ -31,7 +31,7 @@ const studentGuardianSchema = new Schema<Guardian>({
     required: [true, 'fatherContactNo is required'],
   },
   motherName: { type: String, required: [true, 'motherName is required'] },
-  motherOcupation: {
+  motherOccupation: {
     type: String,
     required: [true, 'motherOcupation is required'],
   },
