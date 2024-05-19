@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
 import {
-  StudentMethods,
   StudentModel,
+  // StudentMethods,
+  // StudentModel,
   TGuardian,
   TLocalGuardian,
   TStudent,
@@ -55,7 +56,8 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   address: { type: String, required: [true, 'address is required'] },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+// const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: [true, 'Id is required'], unique: true },
   name: {
     type: studentNameSchema,
@@ -108,9 +110,14 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   isActive: { type: String, enum: ['active', 'block'], default: 'active' },
 });
 
-studentSchema.methods.isUserExits = async function (id: string) {
+// ============================>>>>>>>>>>> creating a custome instance method
+// studentSchema.methods.isUserExits = async function (id: string) {
+//   const existingUser = await Student.findOne({ id });
+//   return existingUser;
+// };
+
+studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
   return existingUser;
 };
-
 export const Student = model<TStudent, StudentModel>('Student', studentSchema);

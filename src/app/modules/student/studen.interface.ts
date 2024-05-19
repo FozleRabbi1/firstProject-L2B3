@@ -1,3 +1,5 @@
+// import { Model } from 'mongoose';
+
 import { Model } from 'mongoose';
 
 export type TGuardian = {
@@ -39,12 +41,19 @@ export type TStudent = {
   isActive: 'active' | 'block';
 };
 
-export type StudentMethods = {
-  isUserExits(id: string): Promise<TStudent | null>;
-};
+// ============ static method
 
-export type StudentModel = Model<
-  TStudent,
-  Record<string, never>,    //this is empty object type 
-  StudentMethods
->;
+export interface StudentModel extends Model<TStudent> {
+  isUserExists(id: string): Promise<TStudent | null>;
+}
+
+//========= custome instans method
+// export type StudentMethods = {
+//   // eslint-disable-next-line no-unused-vars
+//   isUserExits(id: string): Promise<TStudent | null>;
+// };
+// export type StudentModel = Model<
+//   TStudent,
+//   Record<string, never>, //this is empty object type
+//   StudentMethods
+// >;
