@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import bcrypt from 'bcrypt';
 import {
   StudentModel,
   // StudentMethods,
@@ -8,6 +9,7 @@ import {
   TStudent,
   TUserName,
 } from './studen.interface';
+import config from '../../config';
 
 const studentNameSchema = new Schema<TUserName>({
   firstName: {
@@ -59,6 +61,12 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 // const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
 const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: [true, 'Id is required'], unique: true },
+  password: {
+    type: String,
+    required: [true, 'password is required'],
+    maxlength: [10, 'password can not be more then 10 characters'],
+    minlength: [5, 'password can not be less then 5 characters'],
+  },
   name: {
     type: studentNameSchema,
     required: [true, 'eta to mamar barir abdar na, je tumi nam diba na'],
@@ -108,6 +116,37 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   },
   profileImg: { type: String },
   isActive: { type: String, enum: ['active', 'block'], default: 'active' },
+  isDeleted: { type: Boolean, default: false },
+});
+
+// // // //======================>>>>>>>>>> document middleware hook
+// pre save middleware / hook    // এই function টি save function / create function এর কাজের সময় কাজ করবে
+// studentSchema.pre('save', async function (next) {
+//   // eslint-disable-next-line @typescript-eslint/no-this-alias
+//   const user = this;
+//   user.password = await bcrypt.hash(
+//     user.password,
+//     Number(config.bcrypt_salt_round),
+//   );
+//   next();
+// });
+
+// post save middleware / hook  // এই function টি save function / create function এর কাজের সময় কাজ করবে
+studentSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+// studentSchema.set('toJSON', {
+//   transform: (doc, ret) => {
+//     delete ret.password;
+//     return ret;
+//   },
+// });
+
+// ====================>>>>>>> Query Middleware
+studentSchema.pre('find', function (next) {
+  // console.log(this);
+  next();
 });
 
 // ============================>>>>>>>>>>> creating a custome instance method

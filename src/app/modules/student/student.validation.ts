@@ -30,8 +30,12 @@ const localGuardianValidationSchema = z.object({
 // Define Zod schema for the main student schema
 const ValidationSchema = z.object({
   id: z.string().min(1, 'ID is required'),
+  password: z
+    .string()
+    .min(5, { message: 'password can not be less then 5 characters' })
+    .max(10, { message: 'password can not be more than 10 characters' }),
   // id: z.string().min(1, 'ID is required').refine(async (id) => await isIdUnique(id), {
-  //     message: 'ID must be unique',     zod এ কি unique use করা যাই না ,,,, 
+  //     message: 'ID must be unique',     zod এ কি unique use করা যাই না ,,,,
   //   }),
   name: userValidationNameSchema,
   gender: z.enum(['female', 'male', 'other'], {
@@ -49,6 +53,7 @@ const ValidationSchema = z.object({
   localguardian: localGuardianValidationSchema,
   profileImg: z.string().optional(),
   isActive: z.enum(['active', 'block']).default('active'),
+  isDeleted: z.boolean().default(false),
 });
 
 // Export the Zod validation schema
