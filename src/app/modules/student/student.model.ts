@@ -59,64 +59,76 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 // const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-const studentSchema = new Schema<TStudent, StudentModel>({
-  id: { type: String, required: [true, 'Id is required'], unique: true },
-  password: {
-    type: String,
-    required: [true, 'password is required'],
-    maxlength: [10, 'password can not be more then 10 characters'],
-    minlength: [5, 'password can not be less then 5 characters'],
-  },
-  name: {
-    type: studentNameSchema,
-    required: [true, 'eta to mamar barir abdar na, je tumi nam diba na'],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['female', 'male', 'other'],
-      message: `{VALUE} is not valid`,
-      // message:
-      //   "the gender can only be one of the following : 'female', 'male', 'other'",
+const studentSchema = new Schema<TStudent, StudentModel>(
+  {
+    id: { type: String, required: [true, 'Id is required'], unique: true },
+    password: {
+      type: String,
+      required: [true, 'password is required'],
+      maxlength: [10, 'password can not be more then 10 characters'],
+      minlength: [5, 'password can not be less then 5 characters'],
     },
-    required: true,
+    name: {
+      type: studentNameSchema,
+      required: [true, 'eta to mamar barir abdar na, je tumi nam diba na'],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['female', 'male', 'other'],
+        message: `{VALUE} is not valid`,
+        // message:
+        //   "the gender can only be one of the following : 'female', 'male', 'other'",
+      },
+      required: true,
+    },
+    email: { type: String, required: [true, 'email is required'] },
+    contactNumber: {
+      type: String,
+      required: [true, 'contactNumber is required'],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, 'emergencyContactNo is required'],
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'],
+        message:
+          "The blood group can only be one of the following : 'A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'",
+      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, 'Present Address is required '],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, 'Permanent Address is required '],
+    },
+    guardian: {
+      type: studentGuardianSchema,
+      required: [true, 'student Guardian is required'],
+    },
+    localguardian: {
+      type: localGuardianSchema,
+      required: [true, 'local Guardian is required'],
+    },
+    profileImg: { type: String },
+    isActive: { type: String, enum: ['active', 'block'], default: 'active' },
+    isDeleted: { type: Boolean, default: false },
   },
-  email: { type: String, required: [true, 'email is required'] },
-  contactNumber: {
-    type: String,
-    required: [true, 'contactNumber is required'],
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, 'emergencyContactNo is required'],
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: ['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'],
-      message:
-        "The blood group can only be one of the following : 'A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'",
+  {
+    toJSON: {
+      virtuals: true,
     },
   },
-  presentAddress: {
-    type: String,
-    required: [true, 'Present Address is required '],
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, 'Permanent Address is required '],
-  },
-  guardian: {
-    type: studentGuardianSchema,
-    required: [true, 'student Guardian is required'],
-  },
-  localguardian: {
-    type: localGuardianSchema,
-    required: [true, 'local Guardian is required'],
-  },
-  profileImg: { type: String },
-  isActive: { type: String, enum: ['active', 'block'], default: 'active' },
-  isDeleted: { type: Boolean, default: false },
+);
+
+// Virtual
+studentSchema.virtual('fullName').get(function () {
+  return ` ${this.name.firstName} ${this?.name?.middleName} ${this.name.lastName}`;
 });
 
 // // // //======================>>>>>>>>>> document middleware hook
@@ -153,7 +165,7 @@ studentSchema.pre('findOne', function (next) {
   next();
 });
 
-// ===>>>  aggregate চালানর সময় এই ভাবে filter করতে হবে 
+// ===>>>  aggregate চালানর সময় এই ভাবে filter করতে হবে
 studentSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
