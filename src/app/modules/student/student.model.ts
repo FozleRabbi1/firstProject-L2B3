@@ -121,15 +121,15 @@ const studentSchema = new Schema<TStudent, StudentModel>({
 
 // // // //======================>>>>>>>>>> document middleware hook
 // pre save middleware / hook    // এই function টি save function / create function এর কাজের সময় কাজ করবে
-// studentSchema.pre('save', async function (next) {
-//   // eslint-disable-next-line @typescript-eslint/no-this-alias
-//   const user = this;
-//   user.password = await bcrypt.hash(
-//     user.password,
-//     Number(config.bcrypt_salt_round),
-//   );
-//   next();
-// });
+studentSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
 
 // post save middleware / hook  // এই function টি save function / create function এর কাজের সময় কাজ করবে
 studentSchema.post('save', function (doc, next) {
@@ -145,7 +145,17 @@ studentSchema.post('save', function (doc, next) {
 
 // ====================>>>>>>> Query Middleware
 studentSchema.pre('find', function (next) {
-  // console.log(this);
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+studentSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// ===>>>  aggregate চালানর সময় এই ভাবে filter করতে হবে 
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 
