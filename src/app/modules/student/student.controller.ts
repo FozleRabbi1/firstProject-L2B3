@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StudentServices } from './student.service';
 
-const getAllStudents = async (req: Request, res: Response) => {
+const getAllStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const result = await StudentServices.getAllStudentFromDB();
   try {
     res.status(200).json({
@@ -10,35 +14,34 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'students are retrived successfully',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'somthing went wrong',
-      data: err,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-const getSingleStudent = async (req: Request, res: Response) => {
+const getSingleStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { studentId } = req.params;
     const result = await StudentServices.getSingleStudentFromDB(studentId);
-
     res.status(200).json({
       success: true,
       message: 'student is retrived successfully',
       data: result,
     });
   } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'somthing went wrong',
-      data: err,
-    });
+    next(err);
   }
 };
 
-const deleteSingleStudent = async (req: Request, res: Response) => {
+const deleteSingleStudent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { studentId } = req.params;
     const result = await StudentServices.DeleteSingleStudentFromDB(studentId);
@@ -48,12 +51,8 @@ const deleteSingleStudent = async (req: Request, res: Response) => {
       message: 'student deleted successfully',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: err.message || 'somthing went wrong',
-      data: err,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 

@@ -1,7 +1,11 @@
-import express, { Application, Request, Response } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import express, { Application, NextFunction, Request, Response } from 'express';
 import core from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route';
 import { UserRouter } from './app/modules/user/user.route';
+import globalErrorHandler from './app/middleware/globalErrorHandlear';
 const app: Application = express();
 
 //parser
@@ -18,5 +22,7 @@ app.use('*', (req: Request, res: Response) => {
     message: 'route not found',
   });
 });
+
+app.use(globalErrorHandler);
 
 export default app;

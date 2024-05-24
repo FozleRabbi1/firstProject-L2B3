@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
 import {
   StudentModel,
   // StudentMethods,
@@ -9,7 +8,6 @@ import {
   TStudent,
   TUserName,
 } from './studen.interface';
-import config from '../../config';
 
 const studentNameSchema = new Schema<TUserName>({
   firstName: {
@@ -67,12 +65,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'User id is required'],
       unique: true,
       ref: 'User',
-    },
-    password: {
-      type: String,
-      required: [true, 'password is required'],
-      maxlength: [10, 'password can not be more then 10 characters'],
-      minlength: [5, 'password can not be less then 5 characters'],
     },
     name: {
       type: studentNameSchema,
@@ -136,23 +128,6 @@ studentSchema.virtual('fullName').get(function () {
   return ` ${this.name.firstName} ${this?.name?.middleName} ${this.name.lastName}`;
 });
 
-// // // //======================>>>>>>>>>> document middleware hook
-// pre save middleware / hook    // এই function টি save function / create function এর কাজের সময় কাজ করবে
-studentSchema.pre('save', async function (next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_round),
-  );
-  next();
-});
-
-// post save middleware / hook  // এই function টি save function / create function এর কাজের সময় কাজ করবে
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
-});
 // studentSchema.set('toJSON', {
 //   transform: (doc, ret) => {
 //     delete ret.password;
