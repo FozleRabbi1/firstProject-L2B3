@@ -52,7 +52,6 @@ const ValidationSchema = z.object({
   guardian: guardianValidationSchema,
   localguardian: localGuardianValidationSchema,
   profileImg: z.string().optional(),
-  isActive: z.enum(['active', 'block']).default('active'),
   isDeleted: z.boolean().default(false),
 });
 

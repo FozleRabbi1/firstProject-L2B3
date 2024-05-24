@@ -5,7 +5,6 @@ const router = Router();
 
 // we call controller function
 router.get('/', StudentController.getAllStudents);
-router.post('/create-student', StudentController.createStudent);
 router.get('/:studentId', StudentController.getSingleStudent);
 router.delete('/:studentId', StudentController.deleteSingleStudent);
 
