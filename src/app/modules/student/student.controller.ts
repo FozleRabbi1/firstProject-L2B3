@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
 import { StudentServices } from './student.service';
+import sendResponse from '../../utils/sendResponse';
+import httpStatus from 'http-status';
 
 const getAllStudents = async (
   req: Request,
@@ -9,9 +11,10 @@ const getAllStudents = async (
 ) => {
   const result = await StudentServices.getAllStudentFromDB();
   try {
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'students are retrived successfully',
+      message: 'Students are retrive successfully',
       data: result,
     });
   } catch (err) {
@@ -27,7 +30,8 @@ const getSingleStudent = async (
   try {
     const { studentId } = req.params;
     const result = await StudentServices.getSingleStudentFromDB(studentId);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: 'student is retrived successfully',
       data: result,
@@ -46,9 +50,10 @@ const deleteSingleStudent = async (
     const { studentId } = req.params;
     const result = await StudentServices.DeleteSingleStudentFromDB(studentId);
 
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: 'student deleted successfully',
+      message: 'studen wes deleted successfully',
       data: result,
     });
   } catch (err) {

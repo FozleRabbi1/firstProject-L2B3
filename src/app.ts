@@ -6,6 +6,7 @@ import core from 'cors';
 import { StudentRoutes } from './app/modules/student/student.route';
 import { UserRouter } from './app/modules/user/user.route';
 import globalErrorHandler from './app/middleware/globalErrorHandlear';
+import notFound from './app/middleware/notFound';
 const app: Application = express();
 
 //parser
@@ -16,13 +17,7 @@ app.use(core());
 app.use('/api/v1/students', StudentRoutes);
 app.use('/api/v1/users', UserRouter);
 
-app.use('*', (req: Request, res: Response) => {
-  res.send({
-    success: false,
-    message: 'route not found',
-  });
-});
-
 app.use(globalErrorHandler);
+app.use('*', notFound);
 
 export default app;
