@@ -22,7 +22,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
     const newStudent = await Student.create(studentData);
     return newStudent;
   }
-};
+};  
 
 export const UserServices = {
   createStudentIntoDB,
