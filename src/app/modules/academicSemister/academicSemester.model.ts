@@ -6,7 +6,7 @@ import {
   Semestercode,
 } from './academicSemester.constant';
 
-const ascademicSemesterSchema = new Schema<TAcademicSemester>({
+const academicSemesterSchema = new Schema<TAcademicSemester>({
   name: {
     type: String,
     enum: SemesterName,
@@ -33,7 +33,18 @@ const ascademicSemesterSchema = new Schema<TAcademicSemester>({
   },
 });
 
+academicSemesterSchema.pre('save', async function (next) {
+  const isSemesterExists = await AcademicSemester.findOne({
+    year: this.year,
+    name: this.name,
+  });
+  if (isSemesterExists) {
+    throw new Error('Semester already exists');
+  }
+  next();
+});
+
 export const AcademicSemester = model<TAcademicSemester>(
   'AcedemicSemester',
-  ascademicSemesterSchema,
+  academicSemesterSchema,
 );
