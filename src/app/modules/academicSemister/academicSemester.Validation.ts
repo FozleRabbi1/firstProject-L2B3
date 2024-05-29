@@ -13,7 +13,7 @@ const CreateAcademicSemesterSchemaValidation = z.object({
   body: z.object({
     name: semesterName,
     code: semesterCode,
-    year: z.date(),
+    year: z.string(),
     startMonth: months,
     endMonth: months,
   }),

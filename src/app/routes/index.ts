@@ -8,7 +8,7 @@ const router = Router();
 const moduleRoutes = [
   { path: '/users', route: UserRouter },
   { path: '/students', route: StudentRoutes },
-  { path: '/createSemister', route: AcademicSemisterRouter },
+  { path: '/academic-semister', route: AcademicSemisterRouter },
 ];
 // router.use('/users', UserRouter);
 //এখানে map use করা লাগবে না , কারন এখানে আমাদের কোন কিছু return করা লাগবে না , তাই forEach use করা হয়েছে , কারন forEach কোন কিছু return করে না
