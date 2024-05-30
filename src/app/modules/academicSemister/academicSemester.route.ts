@@ -5,8 +5,15 @@ import { validateAcademicSemester } from './academicSemester.Validation';
 
 const router = express.Router();
 
+router.get('/', AcademicSemisterController.getAllAcademicSemester);
 router.get('/:id', AcademicSemisterController.getSingleSemester);
-router.patch('/:id', AcademicSemisterController.updateSingleSemester);
+router.patch(
+  '/:id',
+  validateRequest(
+    validateAcademicSemester.UpdateAcademicSemesterSchemaValidation,
+  ),
+  AcademicSemisterController.updateSingleSemester,
+);
 router.post(
   '/create-academic-semester',
   validateRequest(
@@ -14,6 +21,5 @@ router.post(
   ),
   AcademicSemisterController.createAcademicSemester,
 );
-router.get('/', AcademicSemisterController.getAllAcademicSemester);
 
 export const AcademicSemisterRouter = router;

@@ -81,7 +81,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: true,
     },
     email: { type: String, required: [true, 'email is required'] },
-    dethOfBirth: { type: Date },
+    dethOfBirth: { type: String },
     contactNumber: {
       type: String,
       required: [true, 'contactNumber is required'],
@@ -115,6 +115,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, 'local Guardian is required'],
     },
     profileImg: { type: String },
+    admissionSemester: { type: Schema.Types.ObjectId, ref: 'AcedemicSemester' },
     isDeleted: { type: Boolean, default: false },
   },
   {

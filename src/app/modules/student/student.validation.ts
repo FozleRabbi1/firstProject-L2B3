@@ -46,7 +46,7 @@ const createStudentValidationSchema = z.object({
         .string()
         .email('Invalid email address')
         .min(1, 'Email is required'),
-      dethOfBirth: z.date().optional(),
+      dethOfBirth: z.string().optional(),
       contactNumber: z.string().min(1, 'Contact number is required'),
       emergencyContactNo: z
         .string()
@@ -58,6 +58,7 @@ const createStudentValidationSchema = z.object({
       permanentAddress: z.string().min(1, 'Permanent address is required'),
       guardian: guardianValidationSchema,
       localguardian: localGuardianValidationSchema,
+      admissionSemester: z.string(),
       profileImg: z.string().optional(),
     }),
   }),

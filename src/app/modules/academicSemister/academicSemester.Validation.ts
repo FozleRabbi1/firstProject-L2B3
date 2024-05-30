@@ -18,7 +18,17 @@ const CreateAcademicSemesterSchemaValidation = z.object({
     endMonth: months,
   }),
 });
+const UpdateAcademicSemesterSchemaValidation = z.object({
+  body: z.object({
+    name: semesterName.optional(),
+    code: semesterCode.optional(),
+    year: z.string().optional(),
+    startMonth: months.optional(),
+    endMonth: months.optional(),
+  }),
+});
 
 export const validateAcademicSemester = {
   CreateAcademicSemesterSchemaValidation,
+  UpdateAcademicSemesterSchemaValidation,
 };
