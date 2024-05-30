@@ -14,12 +14,12 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // set student role
   userData.role = 'student';
 
-  const admissionSemester = await AcademicSemester.findById(
+  const admissionSemesterData = await AcademicSemester.findById(
     payload.admissionSemester,
   );
-  if (admissionSemester) {
+  if (admissionSemesterData) {
     // set dynamic generated id
-    userData.id = generateStudentId(admissionSemester);
+    userData.id = await generateStudentId(admissionSemesterData);
   }
   // create a userData
   const newUser = await User.create(userData);
