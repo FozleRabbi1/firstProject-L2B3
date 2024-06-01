@@ -38,7 +38,6 @@ const createStudentValidationSchema = z.object({
     //     message: 'ID must be unique',     zod এ কি unique use করা যাই না ,,,,
     //   }),
     student: z.object({
-      user: z.string(),
       name: userValidationNameSchema,
       gender: z.enum(['female', 'male', 'other'], {
         errorMap: () => ({ message: '{VALUE} is not valid' }),
