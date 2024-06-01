@@ -155,6 +155,18 @@ studentSchema.pre('findOne', function (next) {
   next();
 });
 
+// studentSchema.pre('findOneAndUpdate', async function (next) {
+//   const id = this.getQuery();
+//   console.log(id);
+//   const isStudentExists = await Student.findOne(id);
+//   console.log(isStudentExists);
+//   if (!isStudentExists) {
+//     console.log('not founddd');
+//     throw new AppError(httpStatus.NOT_FOUND, 'user not found!');
+//   }
+//   next();
+// });
+
 // ===>>>  aggregate চালানর সময় এই ভাবে filter করতে হবে
 studentSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
