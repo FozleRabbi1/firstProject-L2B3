@@ -49,6 +49,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   } catch (err) {
     await session.abortTransaction(); // এর ফলে session টি RollBack করবে
     await session.endSession(); //আর এখানে session কে শেষ করা হয়েছে
+    throw new Error('Failed to create student');
   }
 };
 

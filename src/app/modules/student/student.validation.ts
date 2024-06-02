@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 // Define Zod schemas for individual interfaces
-const userValidationNameSchema = z.object({
+const userCreateValidationNameSchema = z.object({
   firstName: z
     .string()
     .trim()
@@ -11,7 +11,7 @@ const userValidationNameSchema = z.object({
   lastName: z.string().trim().min(1, 'Last name is required'),
 });
 
-const guardianValidationSchema = z.object({
+const guardianCreateValidationSchema = z.object({
   fatherName: z.string().trim().min(1, 'Father name is required'),
   fatherOccupation: z.string().min(1, 'Father occupation is required'),
   fatherContactNo: z.string().min(1, 'Father contact number is required'),
@@ -20,14 +20,13 @@ const guardianValidationSchema = z.object({
   motherContactNo: z.string().min(1, 'Mother contact number is required'),
 });
 
-const localGuardianValidationSchema = z.object({
+const localGuardianCreateValidationSchema = z.object({
   name: z.string().min(1, 'Local guardian name is required'),
   occupation: z.string().min(1, 'Occupation is required'),
   contactNo: z.string().min(1, 'Contact number is required'),
   address: z.string().min(1, 'Address is required'),
 });
 
-// Define Zod schema for the main student schema
 const createStudentValidationSchema = z.object({
   body: z.object({
     password: z
@@ -38,7 +37,7 @@ const createStudentValidationSchema = z.object({
     //     message: 'ID must be unique',     zod এ কি unique use করা যাই না ,,,,
     //   }),
     student: z.object({
-      name: userValidationNameSchema,
+      name: userCreateValidationNameSchema,
       gender: z.enum(['female', 'male', 'other'], {
         errorMap: () => ({ message: '{VALUE} is not valid' }),
       }),
@@ -56,8 +55,8 @@ const createStudentValidationSchema = z.object({
         .optional(),
       presentAddress: z.string().min(1, 'Present address is required'),
       permanentAddress: z.string().min(1, 'Permanent address is required'),
-      guardian: guardianValidationSchema,
-      localguardian: localGuardianValidationSchema,
+      guardian: guardianCreateValidationSchema,
+      localguardian: localGuardianCreateValidationSchema,
       academicDepartment: z.string(),
       admissionSemester: z.string(),
       profileImg: z.string().optional(),
@@ -65,7 +64,93 @@ const createStudentValidationSchema = z.object({
   }),
 });
 
+//==================================>>>>>>>>>>>>> Student Update validation schema
+const userUpdateValidationNameSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .max(10, 'Name can not be more than 10 characters')
+    .min(1, 'First name is required')
+    .optional(),
+  middleName: z.string().trim().optional(),
+  lastName: z.string().trim().min(1, 'Last name is required').optional(),
+});
+
+const guardianUpdateValidationSchema = z.object({
+  fatherName: z.string().trim().min(1, 'Father name is required').optional(),
+  fatherOccupation: z
+    .string()
+    .min(1, 'Father occupation is required')
+    .optional(),
+  fatherContactNo: z
+    .string()
+    .min(1, 'Father contact number is required')
+    .optional(),
+  motherName: z.string().min(1, 'Mother name is required').optional(),
+  motherOccupation: z
+    .string()
+    .min(1, 'Mother occupation is required')
+    .optional(),
+  motherContactNo: z
+    .string()
+    .min(1, 'Mother contact number is required')
+    .optional(),
+});
+
+const localGuardianUpdateValidationSchema = z.object({
+  name: z.string().min(1, 'Local guardian name is required').optional(),
+  occupation: z.string().min(1, 'Occupation is required').optional(),
+  contactNo: z.string().min(1, 'Contact number is required').optional(),
+  address: z.string().min(1, 'Address is required').optional(),
+});
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z
+      .object({
+        name: userUpdateValidationNameSchema.optional(),
+        gender: z
+          .enum(['female', 'male', 'other'], {
+            errorMap: () => ({ message: '{VALUE} is not valid' }),
+          })
+          .optional(),
+        email: z
+          .string()
+          .email('Invalid email address')
+          .min(1, 'Email is required')
+          .optional(),
+        dethOfBirth: z.string().optional(),
+        contactNumber: z
+          .string()
+          .min(1, 'Contact number is required')
+          .optional(),
+        emergencyContactNo: z
+          .string()
+          .min(1, 'Emergency contact number is required')
+          .optional(),
+        bloodGroup: z
+          .enum(['A+', 'A-', 'AB+', 'AB-', 'B+', 'B-', 'O+', 'O-'])
+          .optional(),
+        presentAddress: z
+          .string()
+          .min(1, 'Present address is required')
+          .optional(),
+        permanentAddress: z
+          .string()
+          .min(1, 'Permanent address is required')
+          .optional(),
+        guardian: guardianUpdateValidationSchema.optional(),
+        localguardian: localGuardianUpdateValidationSchema.optional(),
+        academicDepartment: z.string().optional(),
+        admissionSemester: z.string().optional(),
+        profileImg: z.string().optional(),
+      })
+      .optional(),
+  }),
+});
+
 // Export the Zod validation schema
 export const studentValidatiSchema = {
   createStudentValidationSchema,
+  updateStudentValidationSchema,
 };
