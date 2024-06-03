@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import config from '../../config';
 import { AcademicSemester } from '../academicSemister/academicSemester.model';
@@ -46,10 +47,10 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     await session.commitTransaction(); // এর ফলে data permantly DB তে save হয়ে যাবে
     await session.endSession(); // এখানে session কে শেষ করা হয়েছে
     return newStudent;
-  } catch (err) {
+  } catch (err: any) {
     await session.abortTransaction(); // এর ফলে session টি RollBack করবে
     await session.endSession(); //আর এখানে session কে শেষ করা হয়েছে
-    throw new Error('Failed to create student');
+    throw new Error(err);
   }
 };
 
