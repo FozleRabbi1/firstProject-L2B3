@@ -23,6 +23,7 @@ import { TStudent } from './studen.interface';
 // };
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  console.log(query);
   const queryObj = { ...query }; // copy query
   let searchTerm = '';
   if (query?.searchTerm) {
@@ -35,16 +36,29 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
       [filed]: { $regex: searchTerm, $options: 'i' },
     })),
   });
-  const excluedeFields = ['searchTerm'];
+  const excluedeFields = ['searchTerm', 'sort', 'limit'];
   excluedeFields.forEach((el) => delete queryObj[el]);
 
-  const result = await searchQuery
+  const filterQuery = searchQuery
     .find(queryObj)
     .populate([
       { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
       { path: 'admissionSemester' },
     ]);
-  return result;
+
+  let sort = '-createdAt';
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery = filterQuery.sort(sort);
+  let limit = Student.length;
+  if (query.limit) {
+    limit = query.limit as number;
+  }
+  const limitQuery = await sortQuery.limit(limit);
+
+  return limitQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {

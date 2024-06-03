@@ -8,6 +8,8 @@ import {
   TStudent,
   TUserName,
 } from './studen.interface';
+import { AppError } from '../../errors/AppErrors';
+import httpStatus from 'http-status';
 
 const studentNameSchema = new Schema<TUserName>({
   firstName: {
@@ -127,6 +129,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
     isDeleted: { type: Boolean, default: false },
   },
   {
+    timestamps: true,
     toJSON: {
       virtuals: true,
     },
@@ -152,6 +155,14 @@ studentSchema.pre('find', function (next) {
 });
 studentSchema.pre('findOne', function (next) {
   this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre('save', async function (next) {
+  const isUserExists = await Student.findOne({ email: this?.email });
+  if (isUserExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User Already exists!');
+  }
   next();
 });
 
