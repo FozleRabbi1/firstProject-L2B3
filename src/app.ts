@@ -15,6 +15,12 @@ app.use(core());
 // application routes
 app.use('/api/v1', router);
 
+app.get('/test', async (req, res) => {
+  //   Promise.reject();
+  const a = 'test';
+  res.send(a);
+});
+
 app.use(globalErrorHandler);
 app.use('*', notFound);
 

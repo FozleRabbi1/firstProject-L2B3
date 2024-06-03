@@ -6,12 +6,13 @@ import { handleZodError } from '../errors/handelZodError';
 import { handelValidationError } from '../errors/handelValidationError';
 import { handleCastError } from '../errors/handelCastError';
 import handelDuplicateError from '../errors/handelDuplicateError';
+import { AppError } from '../errors/AppErrors';
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   // ==================================>>>>>>>>> settings default values
-  let statusCode = err.statusCode || 500;
-  let message = err.message || 'Somthing went wrong!';
+  let statusCode = 500;
+  let message = 'Somthing went wrong!';
   let errorSources: TErrorSource = [
     {
       path: '',
@@ -39,6 +40,23 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof AppError) {
+    statusCode = err?.statusCode;
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
+  } else if (err instanceof Error) {
+    message = err?.message;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
   }
 
   // ==================================>>>>>>>>>  ultimate return
