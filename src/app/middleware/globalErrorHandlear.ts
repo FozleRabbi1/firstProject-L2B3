@@ -4,6 +4,7 @@ import config from '../config';
 import { TErrorSource } from '../interface/error';
 import { handleZodError } from '../errors/handelZodError';
 import { handelValidationError } from '../errors/handelValidationError';
+import { handleCatchError } from '../errors/handelCatchError';
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -22,8 +23,13 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
-  } else if (err.name === 'ValidationError') {
+  } else if (err?.name === 'ValidationError') {
     const simplifiedError = handelValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === 'CastError') {
+    const simplifiedError = handleCatchError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
