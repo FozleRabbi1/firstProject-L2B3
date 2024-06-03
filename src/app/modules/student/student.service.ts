@@ -23,19 +23,27 @@ import { TStudent } from './studen.interface';
 // };
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
+  const queryObj = { ...query }; // copy query
   let searchTerm = '';
   if (query?.searchTerm) {
     searchTerm = query.searchTerm as string;
   }
+  const studentSearchableField = ['email', 'name.firstName', 'presentAddress'];
 
-  const result = await Student.find({
-    $or: ['email', 'name.firstName', 'presentAddress'].map((filed) => ({
+  const searchQuery = Student.find({
+    $or: studentSearchableField.map((filed) => ({
       [filed]: { $regex: searchTerm, $options: 'i' },
     })),
-  }).populate([
-    { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
-    { path: 'admissionSemester' },
-  ]);
+  });
+  const excluedeFields = ['searchTerm'];
+  excluedeFields.forEach((el) => delete queryObj[el]);
+
+  const result = await searchQuery
+    .find(queryObj)
+    .populate([
+      { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
+      { path: 'admissionSemester' },
+    ]);
   return result;
 };
 
