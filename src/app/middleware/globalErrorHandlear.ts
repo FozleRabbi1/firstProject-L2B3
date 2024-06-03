@@ -1,47 +1,40 @@
 import { ErrorRequestHandler } from 'express';
-import { ZodError, ZodIssue } from 'zod';
+import { ZodError } from 'zod';
 import config from '../config';
 import { TErrorSource } from '../interface/error';
+import { handleZodError } from '../errors/handelZodError';
+import { handelValidationError } from '../errors/handelValidationError';
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // settings default values
+  // ==================================>>>>>>>>> settings default values
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Somthing went wrong!';
-  let errorSourse: TErrorSource = [
+  let errorSources: TErrorSource = [
     {
       path: '',
       message: 'Somthing went wrong!!',
     },
   ];
 
-  const handleZodError = (err: ZodError) => {
-    const errorSourse: TErrorSource = err.issues.map((issue: ZodIssue) => {
-      return {
-        path: issue?.path[issue.path.length - 1],
-        message: issue?.message,
-      };
-    });
-    const statusCode = 400;
-    return {
-      statusCode,
-      message: 'Validation Error',
-      errorSourse,
-    };
-  };
-
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSourse = simplifiedError?.errorSourse;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err.name === 'ValidationError') {
+    const simplifiedError = handelValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
   }
 
-  // ultimate return
+  // ==================================>>>>>>>>>  ultimate return
   return res.status(statusCode).json({
     success: false,
     message,
-    errorSourse,
+    errorSources,
+    // err,
     stack: config.NODE_ENV === 'development' ? err?.stack : null,
   });
 };
