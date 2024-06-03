@@ -4,7 +4,8 @@ import config from '../config';
 import { TErrorSource } from '../interface/error';
 import { handleZodError } from '../errors/handelZodError';
 import { handelValidationError } from '../errors/handelValidationError';
-import { handleCatchError } from '../errors/handelCatchError';
+import { handleCastError } from '../errors/handelCastError';
+import handelDuplicateError from '../errors/handelDuplicateError';
 
 // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -29,7 +30,12 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
   } else if (err?.name === 'CastError') {
-    const simplifiedError = handleCatchError(err);
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.code === 11000) {
+    const simplifiedError = handelDuplicateError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
