@@ -8,9 +8,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const globalErrorHandlear_1 = __importDefault(require("./app/middleware/globalErrorHandlear"));
 const notFound_1 = __importDefault(require("./app/middleware/notFound"));
 const routes_1 = __importDefault(require("./app/routes"));
+const globalErrorHandlear_1 = __importDefault(require("./app/middleware/globalErrorHandlear"));
 const app = (0, express_1.default)();
 //parser
 app.use(express_1.default.json());
