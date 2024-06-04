@@ -36,11 +36,11 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
       [filed]: { $regex: searchTerm, $options: 'i' },
     })),
   });
-  const excluedeFields = ['searchTerm', 'sort', 'limit'];
-  excluedeFields.forEach((el) => delete queryObj[el]);
+  const excluedeFields = ['searchTerm', 'sort', 'limit', 'page'];
+  excluedeFields.forEach((el) => delete queryObj[el]); //======== mএখানে email কে বের করে আনা হয়েছে
 
   const filterQuery = searchQuery
-    .find(queryObj)
+    .find(queryObj) //=== email এর সাহায্যে fined করা ,,
     .populate([
       { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
       { path: 'admissionSemester' },
@@ -52,11 +52,18 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   }
 
   const sortQuery = filterQuery.sort(sort);
-  let limit = Student.length;
+  let page = 1;
+  let limit = 0;
+  let skip = 0;
   if (query.limit) {
-    limit = query.limit as number;
+    limit = Number(query.limit);
   }
-  const limitQuery = await sortQuery.limit(limit);
+  if (query.page) {
+    page = Number(query.page);
+    skip = (page - 1) * limit;
+  }
+  const paginateQuery = sortQuery.skip(skip);
+  const limitQuery = await paginateQuery.limit(limit);
 
   return limitQuery;
 };
