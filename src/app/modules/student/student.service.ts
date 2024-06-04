@@ -68,7 +68,13 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   // const fieldsFiltering = await limitQuery.select(fields);
   // return fieldsFiltering;
 
-  const studentQuery = new QuerBuilder(Student.find(), query)
+  const studentQuery = new QuerBuilder(
+    Student.find().populate([
+      { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
+      { path: 'admissionSemester' },
+    ]),
+    query,
+  )
     .search(studentSearchableField)
     .filter()
     .sort()
