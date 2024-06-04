@@ -23,7 +23,6 @@ import { TStudent } from './studen.interface';
 // };
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  console.log(query);
   const queryObj = { ...query }; // copy query
   let searchTerm = '';
   if (query?.searchTerm) {
@@ -36,11 +35,12 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
       [filed]: { $regex: searchTerm, $options: 'i' },
     })),
   });
-  const excluedeFields = ['searchTerm', 'sort', 'limit', 'page'];
-  excluedeFields.forEach((el) => delete queryObj[el]); //======== mএখানে email কে বের করে আনা হয়েছে
+  const excluedeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+  excluedeFields.forEach((el) => delete queryObj[el]); //======== এখানে email কে বের করে আনা হয়েছে
 
+  console.log({ query }, { queryObj });
   const filterQuery = searchQuery
-    .find(queryObj) //=== email এর সাহায্যে fined করা ,,
+    .find(queryObj) //=== email এর সাহায্যে exact match করে fined করা ,,
     .populate([
       { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
       { path: 'admissionSemester' },
@@ -63,9 +63,15 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
     skip = (page - 1) * limit;
   }
   const paginateQuery = sortQuery.skip(skip);
-  const limitQuery = await paginateQuery.limit(limit);
+  const limitQuery = paginateQuery.limit(limit);
 
-  return limitQuery;
+  let fields = '-__v';
+  if (query.fields) {
+    fields = (query.fields as string).split(',').join(' ');
+  }
+  const fieldsFiltering = await limitQuery.select(fields);
+
+  return fieldsFiltering;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
