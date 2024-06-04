@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const config_1 = __importDefault(require("./app/config"));
 const mongoose_1 = __importDefault(require("mongoose"));
-// const PORT = 5000;
+let server;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield mongoose_1.default.connect(config_1.default.database_url);
-            app_1.default.listen(config_1.default.port, () => {
+            server = app_1.default.listen(config_1.default.port, () => {
                 console.log(`Example app listening on PORT === ${config_1.default.port}`);
             });
         }
@@ -30,3 +30,18 @@ function main() {
     });
 }
 main();
+// =====>>> express বা যেকোনো internal বা tecnical problem এর কারনে এই unhandledRejection error টি হয়ে থাকে
+process.on('unhandledRejection', () => {
+    console.log('unhandledRejection id detected, shutting down the server....');
+    if (server) {
+        server.close(() => {
+            process.exit(1);
+        });
+    }
+    process.exit(1);
+});
+// =====>>> আমাদের problem এর কারনে এই uncaughtException error টি হয়ে থাকে , ( এটি syncronous code এর ক্ষেত্রে প্রযোজ্য )
+process.on('uncaughtException', () => {
+    console.log('uncaughtException id detected, shutting down the server....');
+    process.exit(1);
+});
