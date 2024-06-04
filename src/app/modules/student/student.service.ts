@@ -5,6 +5,8 @@ import { AppError } from '../../errors/AppErrors';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
 import { TStudent } from './studen.interface';
+import QuerBuilder from '../../builder/QueryBuilder';
+import { studentSearchableField } from './student.constent';
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
 //   if (await Student.isUserExists(studentData.id)) {
@@ -23,55 +25,58 @@ import { TStudent } from './studen.interface';
 // };
 
 const getAllStudentFromDB = async (query: Record<string, unknown>) => {
-  const queryObj = { ...query }; // copy query
-  let searchTerm = '';
-  if (query?.searchTerm) {
-    searchTerm = query.searchTerm as string;
-  }
-  const studentSearchableField = ['email', 'name.firstName', 'presentAddress'];
+  // const queryObj = { ...query }; // copy query
+  // let searchTerm = '';
+  // if (query?.searchTerm) {
+  //   searchTerm = query.searchTerm as string;
+  // }
+  // const studentSearchableField = ['email', 'name.firstName', 'presentAddress'];
+  // const searchQuery = Student.find({
+  //   $or: studentSearchableField.map((filed) => ({
+  //     [filed]: { $regex: searchTerm, $options: 'i' },
+  //   })),
+  // });
+  // const excluedeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+  // excluedeFields.forEach((el) => delete queryObj[el]); //======== এখানে email কে বের করে আনা হয়েছে
+  // const filterQuery = searchQuery
+  //   .find(queryObj) //=== email এর সাহায্যে exact match করে fined করা ,,
+  //   .populate([
+  //     { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
+  //     { path: 'admissionSemester' },
+  //   ]);
+  // let sort = '-createdAt';
+  // if (query.sort) {
+  //   sort = query.sort as string;
+  // }
+  // const sortQuery = filterQuery.sort(sort);
+  // let page = 1;
+  // let limit = 0;
+  // let skip = 0;
+  // if (query.limit) {
+  //   limit = Number(query.limit);
+  // }
+  // if (query.page) {
+  //   page = Number(query.page);
+  //   skip = (page - 1) * limit;
+  // }
+  // const paginateQuery = sortQuery.skip(skip);
+  // const limitQuery = paginateQuery.limit(limit);
+  // let fields = '-__v';
+  // if (query.fields) {
+  //   fields = (query.fields as string).split(',').join(' ');
+  // }
+  // const fieldsFiltering = await limitQuery.select(fields);
+  // return fieldsFiltering;
 
-  const searchQuery = Student.find({
-    $or: studentSearchableField.map((filed) => ({
-      [filed]: { $regex: searchTerm, $options: 'i' },
-    })),
-  });
-  const excluedeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
-  excluedeFields.forEach((el) => delete queryObj[el]); //======== এখানে email কে বের করে আনা হয়েছে
+  const studentQuery = new QuerBuilder(Student.find(), query)
+    .search(studentSearchableField)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-  console.log({ query }, { queryObj });
-  const filterQuery = searchQuery
-    .find(queryObj) //=== email এর সাহায্যে exact match করে fined করা ,,
-    .populate([
-      { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
-      { path: 'admissionSemester' },
-    ]);
-
-  let sort = '-createdAt';
-  if (query.sort) {
-    sort = query.sort as string;
-  }
-
-  const sortQuery = filterQuery.sort(sort);
-  let page = 1;
-  let limit = 0;
-  let skip = 0;
-  if (query.limit) {
-    limit = Number(query.limit);
-  }
-  if (query.page) {
-    page = Number(query.page);
-    skip = (page - 1) * limit;
-  }
-  const paginateQuery = sortQuery.skip(skip);
-  const limitQuery = paginateQuery.limit(limit);
-
-  let fields = '-__v';
-  if (query.fields) {
-    fields = (query.fields as string).split(',').join(' ');
-  }
-  const fieldsFiltering = await limitQuery.select(fields);
-
-  return fieldsFiltering;
+  const result = await studentQuery.modelQuery;
+  return result;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
