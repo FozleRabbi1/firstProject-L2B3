@@ -37,4 +37,8 @@ const AdminSchema = new Schema<TAdmin>(
   },
 );
 
+AdminSchema.pre('find', function () {
+  this.find({ isDeleted: { $ne: true } });
+});
+
 export const Admin = model<TAdmin>('Admin', AdminSchema);

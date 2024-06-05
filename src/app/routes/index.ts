@@ -5,15 +5,17 @@ import { AcademicSemisterRouter } from '../modules/academicSemister/academicSeme
 import { AcademicFacultyRoute } from '../modules/academicFaculty/academicFaculty.route';
 import { AcademicDepartmentRoutes } from '../modules/academicDepartment/academicDepartment.route';
 import { FacultyRouter } from '../modules/faculty/faculty.route';
+import { AdminRoutes } from '../modules/Admin/admin.route';
 
 const router = Router();
 
 const moduleRoutes = [
   { path: '/users', route: UserRouter },
+  { path: '/admin', route: AdminRoutes },
   { path: '/students', route: StudentRoutes },
   { path: '/faculties', route: FacultyRouter },
-  { path: '/academic-semister', route: AcademicSemisterRouter },
   { path: '/academic-faculties', route: AcademicFacultyRoute },
+  { path: '/academic-semister', route: AcademicSemisterRouter },
   { path: '/academic-departments', route: AcademicDepartmentRoutes },
 ];
 // router.use('/users', UserRouter);
