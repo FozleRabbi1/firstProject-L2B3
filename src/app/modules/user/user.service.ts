@@ -66,14 +66,16 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   const academicDepartment = await AcademicDepartment.findById(
     payload.academicDepartment,
   );
+  if (!academicDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic Department not found');
+  }
 
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
-    if (academicDepartment) {
-      userData.id = await generateFacultyId();
-    }
+    userData.id = await generateFacultyId();
+
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'faield to create User');
