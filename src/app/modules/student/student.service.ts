@@ -5,7 +5,7 @@ import { AppError } from '../../errors/AppErrors';
 import httpStatus from 'http-status';
 import { User } from '../user/user.model';
 import { TStudent } from './studen.interface';
-import QuerBuilder from '../../builder/QueryBuilder';
+import QueryBuilder from '../../builder/QueryBuilder';
 import { studentSearchableField } from './student.constent';
 
 // const createStudentIntoDB = async (studentData: TStudent) => {
@@ -68,7 +68,7 @@ const getAllStudentFromDB = async (query: Record<string, unknown>) => {
   // const fieldsFiltering = await limitQuery.select(fields);
   // return fieldsFiltering;
 
-  const studentQuery = new QuerBuilder(
+  const studentQuery = new QueryBuilder(
     Student.find().populate([
       { path: 'academicDepartment', populate: { path: 'academicFaculty' } },
       { path: 'admissionSemester' },
