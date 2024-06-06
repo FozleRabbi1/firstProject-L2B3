@@ -16,9 +16,42 @@ const courseValidationSchema = z.object({
       .number()
       .nonnegative({ message: 'Credits must be a non-negative number' }),
     preRequisiteCourses: z.array(preRequisiteCoursesSchema).optional(),
+    isDeleted: z.boolean().default(false).optional(),
   }),
 });
 
+const updatePreRequisiteCoursesSchema = z.object({
+  course: z.string().optional(),
+  isDeleted: z.boolean().default(false).optional(),
+});
+
+const updateCourseValidationSchema = z.object({
+  body: z
+    .object({
+      title: z
+        .string()
+        .trim()
+        .min(1, { message: 'Title is required' })
+        .optional(),
+      prefix: z
+        .string()
+        .trim()
+        .min(1, { message: 'Prefix is required' })
+        .optional(),
+      code: z
+        .number()
+        .nonnegative({ message: 'Code must be a non-negative number' })
+        .optional(),
+      credits: z
+        .number()
+        .nonnegative({ message: 'Credits must be a non-negative number' })
+        .optional(),
+      preRequisiteCourses: z.array(updatePreRequisiteCoursesSchema).optional(),
+      isDeleted: z.boolean().default(false).optional(),
+    })
+    .optional(),
+});
 export const CourseValidationSchema = {
   courseValidationSchema,
+  updateCourseValidationSchema,
 };
