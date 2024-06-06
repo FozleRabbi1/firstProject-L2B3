@@ -43,6 +43,53 @@ const AdminCreateValidationSchema = z.object({
   }),
 });
 
+const updateUserNameSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, { message: 'First name is required' })
+    .optional(),
+  middleName: z.string().optional(),
+  lastName: z.string().min(1, { message: 'Last name is required' }).optional(),
+});
+
+const updateAdminCreateValidationSchema = z.object({
+  body: z
+    .object({
+      admin: z
+        .object({
+          designation: z
+            .string()
+            .min(1, { message: 'Designation is required' })
+            .optional(),
+          name: updateUserNameSchema.optional(),
+          gender: z.enum(genderEnum, { message: 'Invalid gender' }).optional(),
+          dateOfBirth: z.string().optional(),
+          email: z.string().email({ message: 'Invalid email' }).optional(),
+          contactNo: z
+            .string()
+            .min(1, { message: 'Contact number is required' })
+            .optional(),
+          emergencyContactNo: z
+            .string()
+            .min(1, { message: 'Emergency contact number is required' })
+            .optional(),
+          bloodGroup: z.enum(bloodGroupEnum).optional(),
+          presentAddress: z
+            .string()
+            .min(1, { message: 'Present address is required' })
+            .optional(),
+          permanentAddress: z
+            .string()
+            .min(1, { message: 'Permanent address is required' })
+            .optional(),
+          profileImg: z.string().optional(),
+          isDeleted: z.boolean().default(false).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
 export const adminCreateValidationSchema = {
   AdminCreateValidationSchema,
+  updateAdminCreateValidationSchema,
 };

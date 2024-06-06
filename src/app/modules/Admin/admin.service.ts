@@ -47,6 +47,11 @@ const updateAdminIntoDB = async (id: string, payload: Partial<TAdmin>) => {
 };
 
 const deleteAdminFromDB = async (id: string) => {
+  // const isDeleted = await Admin.findOne({ id });
+  // console.log(isDeleted);
+  // if (isDeleted?.isDeleted) {
+  //   throw new Error('this user already deleted');
+  // }
   const session = await mongoose.startSession();
   try {
     session.startTransaction();

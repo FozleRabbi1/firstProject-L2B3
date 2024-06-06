@@ -24,7 +24,7 @@ const getAllFacultyFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleFacultyFromDB = async (id: string) => {
-  const result = await Faculty.findOne({ id }).populate({
+  const result = await Faculty.findById(id).populate({
     path: 'academicDepartment',
   });
   return result;
@@ -40,7 +40,7 @@ const updateSingleFaculty = async (id: string, payload: Partial<TFaculty>) => {
       modifiedUpdatedData[`name.${key}`] = value;
     }
   }
-  const result = await Faculty.findOneAndUpdate({ id }, modifiedUpdatedData, {
+  const result = await Faculty.findByIdAndUpdate(id, modifiedUpdatedData, {
     new: true,
     runValidators: true,
   }).populate({ path: 'academicDepartment' });
@@ -51,16 +51,17 @@ const deleteSingleFacultyData = async (id: string) => {
   const session = await mongoose.startSession();
   try {
     await session.startTransaction();
-    const deletedFaculty = await Faculty.findOneAndUpdate(
-      { id },
+    const deletedFaculty = await Faculty.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
     if (!deletedFaculty) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete Faculty');
     }
+    const userId = deletedFaculty.user;
     const deleteUser = await User.findOneAndUpdate(
-      { id },
+      userId,
       { isDeleted: true },
       { new: true },
     );

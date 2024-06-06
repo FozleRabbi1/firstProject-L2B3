@@ -40,5 +40,16 @@ const AdminSchema = new Schema<TAdmin>(
 AdminSchema.pre('find', function () {
   this.find({ isDeleted: { $ne: true } });
 });
+AdminSchema.pre('findOne', function () {
+  this.find({ isDeleted: { $ne: true } });
+});
+AdminSchema.pre('findOneAndUpdate', async function () {
+  const id = this.getQuery();
+  const isDeleted = await Admin.findOne(id);
+  if (!isDeleted) {
+    throw new Error('this user already deleted');
+  }
+  this.find({ isDeleted: { $ne: true } });
+});
 
 export const Admin = model<TAdmin>('Admin', AdminSchema);
