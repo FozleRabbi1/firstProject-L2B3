@@ -58,10 +58,20 @@ const updateSingleCourseIntoDB = async (
     const deletedPreRequisiteCourses = await Course.findByIdAndUpdate(id, {
       $pull: { preRequisiteCourses: { course: { $in: deletedPreRequisite } } },
     });
-    console.log(deletedPreRequisiteCourses);
-  }
 
-  return updateBaseiCourseData;
+    const newPreREquisite = preRequisiteCourses.filter(
+      (el) => el.course && !el.isDeleted,
+    );
+
+    const newPreRequisiteCourses = await Course.findByIdAndUpdate(id, {
+      $addToSet: { preRequisiteCourses: { $each: newPreREquisite } },
+    });
+  }
+  const result = await Course.findById(id).populate(
+    'preRequisiteCourses.course',
+  );
+
+  return result;
 };
 
 export const CoursesService = {
