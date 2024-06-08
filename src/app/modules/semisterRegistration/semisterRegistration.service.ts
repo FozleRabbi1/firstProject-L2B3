@@ -4,11 +4,27 @@ import { AcademicSemester } from '../academicSemister/academicSemester.model';
 import { TSemesterRegistation } from './semisterRegistration.interface';
 import { SemesterRegistation } from './semisterRegistration.module';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { SemesterStatus } from './semesterRefistation.constent';
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistation,
 ) => {
   const academicSemesterId = payload?.academicSemester;
+
+  //   check if there any 'UPCOMMING' or 'ONGOING' registered or not
+  const isThereAnyUpcommingOrOngoingSemester =
+    await SemesterRegistation.findOne({
+      $or: [
+        { status: SemesterStatus.UPCOMMING },
+        { status: SemesterStatus.ONGOING },
+      ],
+    });
+  if (isThereAnyUpcommingOrOngoingSemester) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `There is already a ${isThereAnyUpcommingOrOngoingSemester?.status} registerd semester`,
+    );
+  }
 
   // এখানে check করা হচ্ছে AcademicSemester (dataBase) এর মধ্যে  data আছে কি না ,,, এখানে academicSemesterId ( _id, ObjectId ) হিসেবে আছে
   const isAcademincSemesterExists =
@@ -24,6 +40,7 @@ const createSemesterRegistrationIntoDB = async (
   const isSemesteRegistationExists = await SemesterRegistation.findOne({
     academicSemester: academicSemesterId,
   });
+
   if (isSemesteRegistationExists) {
     throw new AppError(httpStatus.CONFLICT, 'This Semester Already Exists');
   }
@@ -55,7 +72,54 @@ const getSingleSemesterRegistrationsFromDB = async (id: string) => {
   return result;
 };
 
-const updateSemesterRegistrationIntoDB = async () => {};
+const updateSemesterRegistrationIntoDB = async (
+  id: string,
+  payload: Partial<TSemesterRegistation>,
+) => {
+  const requestStatus = payload?.status;
+  // Check there is semester exists or not
+  const isSemesterExists = await SemesterRegistation.findById(id);
+  if (!isSemesterExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Semester not found!');
+  }
+  //   if the registerd semester registation is ended , we will not updated
+  const currentRegisteredStatus = isSemesterExists?.status;
+  if (currentRegisteredStatus === SemesterStatus.ENDED) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `This Semester is already ${currentRegisteredStatus}`,
+    );
+  }
+  //   UPCOMMING--->---ONGOING--->---ENDED
+  if (currentRegisteredStatus === requestStatus) {
+    throw new Error(`this semester already in ${currentRegisteredStatus}`);
+  }
+
+  //==================>>>>>>  এই condition গুলো course এ আরও সহজ ভাবে দেখান হয়েছে
+  if (
+    currentRegisteredStatus === SemesterStatus.UPCOMMING &&
+    requestStatus === SemesterStatus.ENDED
+  ) {
+    throw new Error(`You can't directly update UPCOMMING to ENDED `);
+  }
+  // এই Condition এর অর্থ হল ONGOING আগে থেকেই আছে , কিন্তু requestStatus === ENDED নয়
+  if (
+    currentRegisteredStatus === SemesterStatus.ONGOING &&
+    requestStatus !== SemesterStatus.ENDED
+  ) {
+    throw new Error(
+      `A semester with status ${currentRegisteredStatus} can only be set to 'ENDED'`,
+    );
+  }
+
+  const result = await SemesterRegistation.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  return result;
+};
+
 const deleteSemesterRegistrationFromDB = async () => {};
 
 export const SemesterRegistrationService = {

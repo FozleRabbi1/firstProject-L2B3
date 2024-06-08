@@ -42,13 +42,19 @@ const getSingleSemesterRegistration = catchAsync(async (req, res) => {
   });
 });
 const updateSemesterRegistration = catchAsync(async (req, res) => {
-  //   sendResponse(res, {
-  //     statusCode: httpStatus.OK,
-  //     success: true,
-  //     message: 'Semester Registration is updated successfully',
-  //     data: result,
-  //   });
+  const result =
+    await SemesterRegistrationService.updateSemesterRegistrationIntoDB(
+      req.params.id,
+      req.body,
+    );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: ' Registerd Semester is updated successfully',
+    data: result,
+  });
 });
+
 const deleteSemesterRegistration = catchAsync(async (req, res) => {
   //   sendResponse(res, {
   //     statusCode: httpStatus.OK,
