@@ -94,12 +94,64 @@ const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
       `This faculty is not available at that time ! choose another day or time `,
     );
   }
-
   const result = await OfferedCourse.create({ ...payload, academicSemester });
   return result;
-  // return null;
+};
+
+const updateCourseIntoDB = async (
+  id: string,
+  payload: Pick<TOfferedCourse, 'faculty' | 'days' | 'startTime' | 'endTime'>,
+) => {
+  const { faculty, days, startTime, endTime } = payload;
+
+  // check offered course  exists or not
+  const isOfferdCourseExisis = await OfferedCourse.findById(id);
+  if (!isOfferdCourseExisis) {
+    throw new AppError(httpStatus.NOT_FOUND, `Offered Course is not found`);
+  }
+
+  // check faculty exists or not
+  const isFacultyExists = await Faculty.findById(payload?.faculty);
+  if (!isFacultyExists) {
+    throw new AppError(httpStatus.NOT_FOUND, `Faculty not found`);
+  }
+
+  const semesterRegistation = isOfferdCourseExisis.semesterRegistation;
+  // check this semester registered "UPCOMMING" or not
+  const isUpcomming = await SemesterRegistation.findById(semesterRegistation);
+  if (isUpcomming?.status !== 'UPCOMMING') {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `this semester is already ${isUpcomming?.status}`,
+    );
+  }
+  // get the schedules of the faculties  ( একজোন faculties at a time এক এর অধিক class নিতে পারবে না )
+  const assignedSchedules = await OfferedCourse.find({
+    semesterRegistation,
+    faculty,
+    days: { $in: days },
+  }).select('days startTime endTime');
+
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+  if (hasTimeConflict(assignedSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.BAD_GATEWAY,
+      `This faculty is not available at that time ! choose another day or time `,
+    );
+  }
+
+  const result = await OfferedCourse.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+  return result;
 };
 
 export const OfferedCourseService = {
   createOfferedCourseFromDB,
+  updateCourseIntoDB,
 };
