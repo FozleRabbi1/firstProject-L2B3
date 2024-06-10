@@ -35,13 +35,26 @@ const offeredCourseValidationSchema = z.object({
 });
 
 const updateOfferedCourseValidationSchema = z.object({
-  body: z.object({
-    faculty: z.string().optional(),
-    maxCapacity: z.number().int().positive().optional(),
-    days: z.array(z.enum([...Days] as [string, ...string[]])).optional(),
-    startTime: z.string().optional(),
-    endTime: z.string().optional(),
-  }),
+  body: z
+    .object({
+      faculty: z.string().optional(),
+      maxCapacity: z.number().int().positive().optional(),
+      days: z.array(z.enum([...Days] as [string, ...string[]])).optional(),
+      startTime: z
+        .string() // ph code এর মধ্যে অন্য ভাবে দেয়া আছে , ঐ ভাবে করলেও হবে
+        .refine((time) => timeRegex.test(time), { message: timeErrorMessage }),
+      endTime: z
+        .string()
+        .refine((time) => timeRegex.test(time), { message: timeErrorMessage }),
+    })
+    .refine(
+      // ph code এর মধ্যে অন্য ভাবে দেয়া আছে , ঐ ভাবে করলেও হবে
+      (data) => timeToMinutes(data.startTime) < timeToMinutes(data.endTime),
+      {
+        message: 'End time must be after start time',
+        path: ['endTime'],
+      },
+    ),
 });
 
 export const OfferedCOurseValidationSchema = {
