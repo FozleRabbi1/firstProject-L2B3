@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import { AppError } from '../../errors/AppErrors';
 import { SemesterRegistation } from '../semisterRegistration/semisterRegistration.module';
@@ -8,6 +9,22 @@ import { Course } from '../course/course.model';
 import Faculty from '../faculty/faculty.model';
 import { OfferedCourse } from './OfferedCourse.model';
 import { hasTimeConflict } from './OfferedCourse.utils';
+import QueryBuilder from '../../builder/QueryBuilder';
+import mongoose from 'mongoose';
+
+const getAllOfferedCourseFromDB = async (query: Record<string, unknown>) => {
+  const offeredQuery = new QueryBuilder(OfferedCourse.find(), query)
+    .sort()
+    .paginate();
+
+  const result = await offeredQuery.modelQuery;
+  return result;
+};
+
+const getSingleOfferedCourseFromDB = async (id: string) => {
+  const result = await OfferedCourse.findById(id);
+  return result;
+};
 
 const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
   const {
@@ -98,6 +115,7 @@ const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
   return result;
 };
 
+// ========================================>>>>>>>>>>>> updateCourseIntoDB
 const updateCourseIntoDB = async (
   id: string,
   payload: Pick<TOfferedCourse, 'faculty' | 'days' | 'startTime' | 'endTime'>,
@@ -151,7 +169,51 @@ const updateCourseIntoDB = async (
   return result;
 };
 
+const deleteOfferedCourseFromDB = async (id: string) => {
+  const isOfferdCourseExisis = await OfferedCourse.findById(id);
+  if (!isOfferdCourseExisis) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Deleted course is Not Found');
+  }
+
+  const semesterRegistation = isOfferdCourseExisis.semesterRegistation;
+  const semesterRegistationStatus =
+    await SemesterRegistation.findById(semesterRegistation).select('status');
+
+  if (semesterRegistationStatus?.status !== 'UPCOMMING') {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Offered Course Can not be Deleted ! Because it is ${semesterRegistationStatus?.status}`,
+    );
+  }
+
+  const session = await mongoose.startSession();
+  try {
+    await session.startTransaction();
+
+    const result = await OfferedCourse.findByIdAndDelete(id, {
+      new: true,
+      session,
+    });
+
+    await SemesterRegistation.findByIdAndDelete(semesterRegistation, {
+      new: true,
+      session,
+    });
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(err);
+  }
+};
+
 export const OfferedCourseService = {
+  getAllOfferedCourseFromDB,
   createOfferedCourseFromDB,
   updateCourseIntoDB,
+  getSingleOfferedCourseFromDB,
+  deleteOfferedCourseFromDB,
 };
