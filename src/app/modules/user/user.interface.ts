@@ -5,6 +5,7 @@ import { User_Role } from './user.constent';
 export interface TUser {
   id: string;
   password: string;
+  passwordChangeAt?: Date;
   role: 'admin' | 'student' | 'faculty';
   needPasswordChange: boolean;
   status: 'in-progress' | 'blocked';

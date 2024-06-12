@@ -20,14 +20,19 @@ export const Auth = (...requiredRole: TUserRole[]) => {
       config.jwt_access_secret as string,
       function (err, decoded) {
         if (err) {
-          throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!');
+          throw new AppError(
+            httpStatus.UNAUTHORIZED,
+            'You are not authorize!!',
+          );
         }
 
         const role = (decoded as JwtPayload).role;
-        console.log(role);
-        console.log(requiredRole);
+
         if (requiredRole && !requiredRole.includes(role)) {
-          throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!');
+          throw new AppError(
+            httpStatus.UNAUTHORIZED,
+            'You are not authorize!!!',
+          );
         }
 
         req.user = decoded as JwtPayload;
