@@ -48,7 +48,7 @@ export const Auth = (...requiredRole: TUserRole[]) => {
     ) {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!!!');
     }
-    
+
     if (requiredRole && !requiredRole.includes(role)) {
       // requiredRole এই paramiter array এর মধ্যে role টা আছে কি না তা check করবে
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!!!');
