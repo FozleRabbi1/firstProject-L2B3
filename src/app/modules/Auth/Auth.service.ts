@@ -38,6 +38,7 @@ const loginUserService = async (paylod: TLoginUser) => {
   }
   // =================================>>>>>  checking if the password is correct or not
   if (!(await User.isPasswordMatched(paylod?.password, userData?.password))) {
+    // console.log(paylod.password, userData.password);
     throw new AppError(httpStatus.FORBIDDEN, 'password is not matched');
   }
   // ================================>>>>>  checking if the user is already deleted or not
