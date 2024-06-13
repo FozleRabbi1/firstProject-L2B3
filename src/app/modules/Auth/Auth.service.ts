@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import { AppError } from '../../errors/AppErrors';
 import { User } from '../user/user.model';
 import { TLoginUser } from './Auth.interface';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import bcrypt from 'bcrypt';
 import { createToken } from './Auth.utils';
@@ -120,7 +120,63 @@ const changePassword = async (
   return result;
 };
 
+const refreshToken = async (token: string) => {
+  // if the toke send from the client
+  if (!token) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!');
+  }
+  // check if the token is valid or not
+  const decoded = jwt.verify(
+    token,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload;
+
+  // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
+  const { userId: id, iat } = decoded;
+
+  // ========================================>>>>>>>>>> STATICKS method
+  const userData = await User.isUserExistsByCustomeId(id);
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+  // ================================>>>>>  checking if the user is already deleted or not
+  if (userData?.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already deleted');
+  }
+  // =================================>>>>>  checking if the user is already Blocked  or in-progress
+  if (userData?.status !== 'in-progress') {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already Blocked');
+  }
+
+  if (
+    userData.passwordChangeAt &&
+    User.isJWTIssuedBeforePasswordChange(
+      userData.passwordChangeAt,
+      iat as number,
+    )
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!!!');
+  }
+
+  const jwtPayload = {
+    userId: userData.id,
+    role: userData.role,
+  };
+  // =========== Auth.utils function
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return {
+    accessToken,
+  };
+};
+
 export const UsersLoginService = {
   loginUserService,
   changePassword,
+  refreshToken,
 };
