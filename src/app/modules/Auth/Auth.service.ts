@@ -6,6 +6,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import bcrypt from 'bcrypt';
 import { createToken } from './Auth.utils';
+import { sendEmail } from '../../utils/sendEmail';
 // import bcrypt from 'bcrypt';
 
 const loginUserService = async (paylod: TLoginUser) => {
@@ -175,8 +176,82 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const forgatePasswordServer = async (id: string) => {
+  const userData = await User.isUserExistsByCustomeId(id);
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+  if (userData?.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already deleted');
+  }
+  if (userData?.status !== 'in-progress') {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already Blocked');
+  }
+
+  const jwtPayload = {
+    userId: userData.id,
+    role: userData.role,
+  };
+  // =========== Auth.utils function
+  const resetToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    '10m',
+  );
+
+  const resetUILInk = `${config.reset_pass_ui_link}?id=${userData.id}&token=${resetToken}`;
+  sendEmail(userData.email, resetUILInk);
+};
+
+const resetPasswordServer = async (
+  id: string,
+  newPassword: string,
+  token: string,
+) => {
+  const userData = await User.isUserExistsByCustomeId(id);
+
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
+  }
+  if (userData?.isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already deleted');
+  }
+  if (userData?.status !== 'in-progress') {
+    throw new AppError(httpStatus.FORBIDDEN, 'User is already Blocked');
+  }
+
+  // ===================>>>>>  verify here this user id or token,s decoded id is same or not এবং এখানে refresh secrete use করা যাবে না Access secsrete use করতে হবে ( video : 1.30 )
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+
+  if (id !== decoded.userId) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You Are Forbidden');
+  }
+
+  const hashPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_round),
+  );
+
+  const result = await User.findOneAndUpdate(
+    { id: decoded.userId, role: decoded.role },
+    {
+      password: hashPassword,
+      passwordChangeAt: new Date(),
+    },
+    { new: true },
+  );
+
+  return result;
+};
+
 export const UsersLoginService = {
-  loginUserService,
-  changePassword,
   refreshToken,
+  changePassword,
+  loginUserService,
+  resetPasswordServer,
+  forgatePasswordServer,
 };

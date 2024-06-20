@@ -25,7 +25,7 @@ const moduleRoutes = [
   { path: '/academic-semister', route: AcademicSemisterRouter },
   { path: '/semester-registation', route: SemesterRegisterRouter },
   { path: '/academic-departments', route: AcademicDepartmentRoutes },
-];
+];  
 // router.use('/users', UserRouter);
 //এখানে map use করা লাগবে না , কারন এখানে আমাদের কোন কিছু return করা লাগবে না , তাই forEach use করা হয়েছে , কারন forEach কোন কিছু return করে না
 moduleRoutes.forEach((pathRouter) =>

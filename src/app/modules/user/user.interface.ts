@@ -4,6 +4,7 @@ import { User_Role } from './user.constent';
 
 export interface TUser {
   id: string;
+  email: string;
   password: string;
   passwordChangeAt?: Date;
   role: 'admin' | 'student' | 'faculty';

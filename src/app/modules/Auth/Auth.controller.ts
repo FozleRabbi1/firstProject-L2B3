@@ -11,6 +11,7 @@ const loginUser = catchAsync(async (req, res) => {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
   });
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -44,8 +45,37 @@ const refreshToken = catchAsync(async (req, res) => {
   });
 });
 
+const forgatePassword = catchAsync(async (req, res) => {
+  const { id } = req.body;
+  const result = await UsersLoginService.forgatePasswordServer(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Reset link is generated  successfully',
+    data: result,
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  const { id, newPassword } = req.body;
+  const token = req.headers.authorization;
+  const result = await UsersLoginService.resetPasswordServer(
+    id,
+    newPassword,
+    token as string,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password Reset successfully',
+    data: result,
+  });
+});
+
 export const AuthController = {
   loginUser,
   refreshToken,
+  resetPassword,
   passwordChange,
+  forgatePassword,
 };
