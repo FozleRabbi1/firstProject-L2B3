@@ -161,10 +161,20 @@ studentSchema.pre('findOne', function (next) {
 studentSchema.pre('save', async function (next) {
   const isUserExists = await Student.findOne({ email: this?.email });
   if (isUserExists) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User Already exists!');
+    throw new AppError(httpStatus.ALREADY_REPORTED, 'User Already exists!');
   }
   next();
 });
+
+// studentSchema.pre('findOne', async function (next) {
+//   const id = this.getQuery();
+//   console.log(id);
+//   const result = await Student.findById(id);
+//   if (!result) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'User Is Not Found!');
+//   }
+//   // next();
+// });
 
 // studentSchema.pre('findOneAndUpdate', async function (next) {
 //   const id = this.getQuery();
