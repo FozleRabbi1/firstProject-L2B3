@@ -17,6 +17,7 @@ import { TFaculty } from '../faculty/faculty.interface';
 import Faculty from '../faculty/faculty.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { Admin } from '../Admin/admin.model';
+import { verifyToken } from '../Auth/Auth.utils';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a object
@@ -129,8 +130,33 @@ const createAdminFromDB = async (password: string, payload: TFaculty) => {
   }
 };
 
+// type UserResult = {} | null;
+const getMeFromDB = async (token: string) => {
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
+  const { userId, role } = decoded;
+
+  let result = null;
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate([
+      { path: 'user' },
+      { path: 'academicDepartment' },
+      { path: 'admissionSemester' },
+    ]);
+  } else if (role === 'admin') {
+    result = await Admin.findOne({ id: userId });
+  } else {
+    result = await Faculty.findOne({ id: userId });
+  }
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Data Not Found');
+  }
+
+  return result;
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
   createAdminFromDB,
+  getMeFromDB,
 };

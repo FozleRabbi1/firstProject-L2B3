@@ -5,7 +5,7 @@ import { TLoginUser } from './Auth.interface';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
 import bcrypt from 'bcrypt';
-import { createToken } from './Auth.utils';
+import { createToken, verifyToken } from './Auth.utils';
 import { sendEmail } from '../../utils/sendEmail';
 // import bcrypt from 'bcrypt';
 
@@ -126,12 +126,14 @@ const refreshToken = async (token: string) => {
   if (!token) {
     throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!');
   }
-  // check if the token is valid or not
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
 
+  // ========================================>>>>> check if the token is valid or not
+  // const decoded = jwt.verify(   // এই ভাবে করলেও হবে
+  //   token,
+  //   config.jwt_refresh_secret as string,
+  // ) as JwtPayload;
+  //=========================================>>>>>> //এইভাবে একটা Utils function বানিয়ে করলেও হবে
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
   // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
   const { userId: id, iat } = decoded;
 

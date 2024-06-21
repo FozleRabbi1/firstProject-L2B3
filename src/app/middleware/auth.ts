@@ -1,10 +1,11 @@
 import httpStatus from 'http-status';
 import { AppError } from '../errors/AppErrors';
 import { catchAsync } from '../utils/catchAsync';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
+import { verifyToken } from '../modules/Auth/Auth.utils';
 
 // একখানে parameter হিসেবে একটি array আসবে ,,,,, (vdo : 8:52---M 17.7)
 export const Auth = (...requiredRole: TUserRole[]) => {
@@ -16,11 +17,11 @@ export const Auth = (...requiredRole: TUserRole[]) => {
       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorize!');
     }
     // check if the token is valid or not
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload;
-
+    // const decoded = jwt.verify(
+    //   token,
+    //   config.jwt_access_secret as string,
+    // ) as JwtPayload;
+    const decoded = verifyToken(token, config.jwt_access_secret as string);
     // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
     const { role, userId: id, iat } = decoded;
 

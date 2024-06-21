@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export const createToken = (
   jwtPayload: { userId: string; role: string },
@@ -9,7 +9,6 @@ export const createToken = (
     expiresIn,
   });
 };
-
 // ------------------------->>>>>>>> এই code কে উপরের code এ convert করা হয়েছে ,,,,
 // const refreshToken = jwt.sign(
 //     jwtPayload,
@@ -18,3 +17,7 @@ export const createToken = (
 //       expiresIn: config.jwt_refresh_expires_in,
 //     },
 //   );
+
+export const verifyToken = (token: string, secret: string) => {
+  return jwt.verify(token, secret) as JwtPayload;
+};

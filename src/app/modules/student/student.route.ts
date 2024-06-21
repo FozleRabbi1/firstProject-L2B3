@@ -10,7 +10,7 @@ const router = Router();
 router.get('/', StudentController.getAllStudents);
 router.get(
   '/:studentId',
-  Auth('faculty', 'admin'),
+  Auth('student', 'faculty', 'admin'),
   StudentController.getSingleStudent,
 );
 router.patch(
