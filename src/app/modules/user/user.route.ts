@@ -28,12 +28,22 @@ router.post(
 router.post(
   '/create-faculty',
   Auth(User_Role.admin),
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(facultyCreateValidationSchema.FacultyCreateValidationSchema),
   userController.createFaculty,
 );
 router.post(
   '/create-admin',
   // Auth(User_Role.admin),
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(adminCreateValidationSchema.AdminCreateValidationSchema),
   userController.createAdmin,
 );

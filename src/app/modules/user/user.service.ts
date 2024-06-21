@@ -71,7 +71,11 @@ const createStudentIntoDB = async (
 };
 
 // =============================>>>>>>>>>>>>>>>> Create Faculty
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
   const userData: Partial<TUser> = {};
   userData.password = password || config.default_password;
   userData.role = 'faculty';
@@ -86,12 +90,18 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   try {
     session.startTransaction();
     userData.id = await generateFacultyId();
+
+    const imageName = `${userData.id}${payload?.name.firstName}`;
+    const { secure_url } = await sendImageToCloudinary(file?.path, imageName);
+
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'faield to create User');
     }
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImg = secure_url;
+
     const faculty = await Faculty.create([payload], { session });
     if (!faculty.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'faield to create Faculty');
@@ -107,7 +117,11 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 };
 
 // =============================>>>>>>>>>>>>>>>> Create Faculty
-const createAdminFromDB = async (password: string, payload: TFaculty) => {
+const createAdminFromDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
   const userData: Partial<TUser> = {};
   userData.password = password || config.default_password;
   userData.role = 'admin';
@@ -118,12 +132,17 @@ const createAdminFromDB = async (password: string, payload: TFaculty) => {
   try {
     await session.startTransaction();
     userData.id = await generatedAdminId();
+
+    const imageName = `${userData.id}${payload?.name.firstName}`;
+    const { secure_url } = await sendImageToCloudinary(file?.path, imageName);
+
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Faield to create User');
     }
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
+    payload.profileImg = secure_url;
 
     const admin = await Admin.create([payload], { session });
     if (!admin.length) {

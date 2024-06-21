@@ -83,7 +83,7 @@ const updateFacultyCreateValidationSchema = z.object({
             .string()
             .min(1, { message: 'Permanent address is required' })
             .optional(),
-          profileImg: z.string().optional(),
+          // profileImg: z.string().optional(),
           academicDepartment: z.string().optional(),
           isDeleted: z.boolean().default(false).optional(),
         })
