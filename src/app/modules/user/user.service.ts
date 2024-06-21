@@ -45,7 +45,7 @@ const createStudentIntoDB = async (
     }
     // =====================================>>> send image to cloudinary
     const imageName = `${userData.id}${payload?.name.firstName}`;
-    sendImageToCloudinary(file?.path, imageName);
+    const { secure_url } = await sendImageToCloudinary(file?.path, imageName);
 
     // =====================================>>>>>>>>>>>>>>>>>>  Transaction --- 1
     const newUser = await User.create([userData], { session });
@@ -54,6 +54,7 @@ const createStudentIntoDB = async (
     }
     payload.id = newUser[0].id; // this is embedding Id
     payload.user = newUser[0]._id; // this is reference Id
+    payload.profileImg = secure_url;
     // =====================================>>>>>>>>>>>>>>>>>>  Transaction --- 2
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
