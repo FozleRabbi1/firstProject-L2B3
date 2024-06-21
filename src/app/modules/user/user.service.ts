@@ -17,8 +17,13 @@ import { TFaculty } from '../faculty/faculty.interface';
 import Faculty from '../faculty/faculty.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 import { Admin } from '../Admin/admin.model';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
-const createStudentIntoDB = async (password: string, payload: TStudent) => {
+const createStudentIntoDB = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   // create a object
   const userData: Partial<TUser> = {};
   // if password is not given , use default password
@@ -38,6 +43,10 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
       // set dynamic generated id
       userData.id = await generateStudentId(admissionSemesterData);
     }
+    // =====================================>>> send image to cloudinary
+    const imageName = `${userData.id}${payload?.name.firstName}`;
+    sendImageToCloudinary(file?.path, imageName);
+
     // =====================================>>>>>>>>>>>>>>>>>>  Transaction --- 1
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
@@ -153,7 +162,6 @@ const getMeFromDB = async (userId: string, role: string) => {
 
   return result;
 };
-
 
 const changeStatusIntoDB = async (id: string, status: string) => {
   const result = await User.findByIdAndUpdate(id, { status }, { new: true });

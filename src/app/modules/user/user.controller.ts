@@ -5,7 +5,11 @@ import { catchAsync } from '../../utils/catchAsync';
 
 const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
-  const result = await UserServices.createStudentIntoDB(password, studentData);
+  const result = await UserServices.createStudentIntoDB(
+    req.file,
+    password,
+    studentData,
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -54,7 +58,7 @@ const getMe = catchAsync(async (req, res) => {
 
 const changeStatus = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const {status} = req.body;
+  const { status } = req.body;
   const result = await UserServices.changeStatusIntoDB(id, status);
   sendResponse(res, {
     statusCode: httpStatus.OK,
