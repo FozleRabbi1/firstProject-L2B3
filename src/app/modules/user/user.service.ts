@@ -24,6 +24,10 @@ const createStudentIntoDB = async (
   password: string,
   payload: TStudent,
 ) => {
+  const isStudentExists = await Student.findOne({ email: payload.email });
+  if (isStudentExists) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'User already exists');
+  }
   // create a object
   const userData: Partial<TUser> = {};
   // if password is not given , use default password
