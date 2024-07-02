@@ -5,7 +5,7 @@ const Days = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 const offeredCourseSchema = new Schema<TOfferedCourse>(
   {
-    semesterRegistation: {
+    semesterRegistration: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'SemesterRegistation',
