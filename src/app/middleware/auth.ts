@@ -21,8 +21,14 @@ export const Auth = (...requiredRole: TUserRole[]) => {
     //   token,
     //   config.jwt_access_secret as string,
     // ) as JwtPayload;
-    const decoded = verifyToken(token, config.jwt_access_secret as string);
+    let decoded;
+    try {
+      decoded = verifyToken(token, config.jwt_access_secret as string);
+    } catch (err) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized');
+    }
     // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
+
     const { role, userId: id, iat } = decoded;
 
     // ========================================>>>>>>>>>> STATICKS method
