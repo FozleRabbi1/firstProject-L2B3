@@ -8,7 +8,7 @@ const timeToMinutes = (time: string) => {
 const offeredCourseValidationSchema = z.object({
   body: z
     .object({
-      semesterRegistation: z.string(),
+      semesterRegistration: z.string(),
       academicSemester: z.string().optional(),
       academicFaculty: z.string(),
       academicDepartment: z.string(),

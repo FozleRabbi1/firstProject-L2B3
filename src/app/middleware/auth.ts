@@ -1,11 +1,12 @@
 import httpStatus from 'http-status';
 import { AppError } from '../errors/AppErrors';
 import { catchAsync } from '../utils/catchAsync';
-import { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import { TUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
-import { verifyToken } from '../modules/Auth/Auth.utils';
+
+// import { verifyToken } from '../modules/Auth/Auth.utils';
 
 // একখানে parameter হিসেবে একটি array আসবে ,,,,, (vdo : 8:52---M 17.7)
 export const Auth = (...requiredRole: TUserRole[]) => {
@@ -21,14 +22,22 @@ export const Auth = (...requiredRole: TUserRole[]) => {
     //   token,
     //   config.jwt_access_secret as string,
     // ) as JwtPayload;
-    let decoded;
-    try {
-      decoded = verifyToken(token, config.jwt_access_secret as string);
-    } catch (err) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized');
-    }
-    // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
 
+    // ================================>>> refectored by mir vai
+    // let decoded;
+    // try {
+    //   decoded = verifyToken(token, config.jwt_access_secret as string);
+    // } catch (err) {
+    //   throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized');
+    // }
+
+    // checking if the given token is valid
+    const decoded = jwt.verify(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload;
+
+    // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
     const { role, userId: id, iat } = decoded;
 
     // ========================================>>>>>>>>>> STATICKS method

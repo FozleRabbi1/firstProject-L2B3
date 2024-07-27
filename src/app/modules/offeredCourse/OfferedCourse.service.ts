@@ -28,7 +28,7 @@ const getSingleOfferedCourseFromDB = async (id: string) => {
 
 const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
   const {
-    semesterRegistation,
+    semesterRegistration,
     academicFaculty,
     academicDepartment,
     course,
@@ -40,7 +40,7 @@ const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
   } = payload;
 
   const isSemesterRegistation =
-    await SemesterRegistation.findById(semesterRegistation);
+    await SemesterRegistation.findById(semesterRegistration);
   if (!isSemesterRegistation) {
     throw new AppError(httpStatus.NOT_FOUND, 'Semester Registation not found');
   }
@@ -82,7 +82,7 @@ const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
   // check if the same course same section in same registered semester exists
   const isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection =
     await OfferedCourse.findOne({
-      semesterRegistation,
+      semesterRegistration,
       course,
       section,
     });
@@ -95,7 +95,7 @@ const createOfferedCourseFromDB = async (payload: TOfferedCourse) => {
 
   // get the schedules of the faculties  ( একজোন faculties at a time এক এর অধিক class নিতে পারবে না )
   const assignedSchedules = await OfferedCourse.find({
-    semesterRegistation,
+    semesterRegistration,
     faculty,
     days: { $in: days },
   }).select('days startTime endTime');
@@ -175,7 +175,7 @@ const deleteOfferedCourseFromDB = async (id: string) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Deleted course is Not Found');
   }
 
-  const semesterRegistation = isOfferdCourseExisis.semesterRegistation;
+  const semesterRegistation = isOfferdCourseExisis.semesterRegistration;
   const semesterRegistationStatus =
     await SemesterRegistation.findById(semesterRegistation).select('status');
 
