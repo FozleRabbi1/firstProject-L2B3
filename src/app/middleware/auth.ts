@@ -24,18 +24,21 @@ export const Auth = (...requiredRole: TUserRole[]) => {
     // ) as JwtPayload;
 
     // ================================>>> refectored by mir vai
-    // let decoded;
-    // try {
-    //   decoded = verifyToken(token, config.jwt_access_secret as string);
-    // } catch (err) {
-    //   throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized');
-    // }
+    let decoded;
+    try {
+      decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
+    } catch (err) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized');
+    }
 
     // checking if the given token is valid
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload;
+    // const decoded = jwt.verify(
+    //   token,
+    //   config.jwt_access_secret as string,
+    // ) as JwtPayload;
 
     // iat  এর অর্থ হল JWT কোন time এ issue হয়েছিল বা create হয়েছিল তার সময় ,,,,,
     const { role, userId: id, iat } = decoded;
