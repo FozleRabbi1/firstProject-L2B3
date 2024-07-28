@@ -8,6 +8,7 @@ import EnrolledCourse from './EnrolledCourse.module';
 import mongoose from 'mongoose';
 import { SemesterRegistation } from '../semisterRegistration/semisterRegistration.module';
 import { Course } from '../course/course.model';
+import Faculty from '../faculty/faculty.model';
 
 const createCourseIntoDB = async (
   userId: string,
@@ -16,7 +17,6 @@ const createCourseIntoDB = async (
   const isOfferedCourseExixts = await OfferedCourse.findById(
     payload.offeredCourse,
   );
-
   const course = await Course.findById(isOfferedCourseExixts?.course);
 
   if (!isOfferedCourseExixts) {
@@ -139,6 +139,64 @@ const createCourseIntoDB = async (
   }
 };
 
+const updateEnrolledCourseMarksIntoDB = async (
+  id: string,
+  payload: Partial<TEnrolledCourse>,
+) => {
+  const { semesterRegistration, offeredCourse, student, courseMarks } = payload;
+
+  const isSemesterExixts =
+    await SemesterRegistation.findById(semesterRegistration);
+  if (!isSemesterExixts) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Semester Registation Not Found');
+  }
+
+  const isOfferedCourseExixts = await OfferedCourse.findById(offeredCourse);
+  if (!isOfferedCourseExixts) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Offered Course Not Found');
+  }
+
+  const isStudentExixts = await Student.findById(student);
+  if (!isStudentExixts) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Student Not Found');
+  }
+
+  const facultyId = await Faculty.findOne({ id }, { _id: 1 });
+  if (!facultyId) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Faculty Not Found');
+  }
+
+  const isCourseBelongToFaculty = await EnrolledCourse.findOne({
+    semesterRegistration,
+    offeredCourse,
+    student,
+    faculty: facultyId._id,
+  });
+
+  if (!isCourseBelongToFaculty) {
+    throw new AppError(httpStatus.FORBIDDEN, 'You Aer Forbidden');
+  }
+
+  const modifiedData: Record<string, unknown> = {
+    ...courseMarks,
+  };
+
+  if (courseMarks && Object.keys(courseMarks).length) {
+    for (const [key, value] of Object.entries(courseMarks)) {
+      modifiedData[`courseMarks.${key}`] = value;
+    }
+  }
+
+  const result = await EnrolledCourse.findByIdAndUpdate(
+    isCourseBelongToFaculty._id,
+    modifiedData,
+    { new: true },
+  );
+
+  return result;
+};
+
 export const CoursesService = {
   createCourseIntoDB,
+  updateEnrolledCourseMarksIntoDB,
 };
