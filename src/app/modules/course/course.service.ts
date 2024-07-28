@@ -11,18 +11,40 @@ const createCourseIntoDB = async (payload: TCourse) => {
   return result;
 };
 
+// const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
+//   const courseQuery = new QueryBuilder(
+//     Course.find().populate({ path: 'preRequisiteCourses.course' }),
+//     query,
+//   )
+//     .search(searchCourseFilds)
+//     .fields()
+//     .filter()
+//     .paginate()
+//     .sort();
+//   const result = await courseQuery.modelQuery;
+//   const meta = await courseQuery.countTotal();
+//   console.log(result);
+//   return { meta, result };
+// };
+
 const getAllCoursesFromDB = async (query: Record<string, unknown>) => {
   const courseQuery = new QueryBuilder(
-    Course.find().populate({ path: 'preRequisiteCourses.course' }),
+    Course.find().populate('preRequisiteCourses.course'),
     query,
   )
     .search(searchCourseFilds)
-    .fields()
     .filter()
+    .sort()
     .paginate()
-    .sort();
+    .fields();
+
   const result = await courseQuery.modelQuery;
-  return result;
+  const meta = await courseQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const getSingleCourseFromDB = async (id: string) => {
