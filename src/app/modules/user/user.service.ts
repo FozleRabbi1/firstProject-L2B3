@@ -60,6 +60,7 @@ const createStudentIntoDB = async (
     payload.user = newUser[0]._id; // this is reference Id
     payload.profileImg = secure_url;
     // =====================================>>>>>>>>>>>>>>>>>>  Transaction --- 2
+
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
       throw new AppError(httpStatus.BAD_REQUEST, 'Faild to create Student');
