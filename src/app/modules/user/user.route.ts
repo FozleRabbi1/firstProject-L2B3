@@ -50,7 +50,12 @@ router.post(
 
 router.get(
   '/me',
-  Auth(User_Role.admin, User_Role.faculty, User_Role.student),
+  Auth(
+    User_Role.superAdmin,
+    User_Role.admin,
+    User_Role.faculty,
+    User_Role.student,
+  ),
   userController.getMe,
 );
 

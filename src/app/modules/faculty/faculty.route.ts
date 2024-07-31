@@ -7,19 +7,32 @@ import { User_Role } from '../user/user.constent';
 
 const router = express.Router();
 
-router.get('/deleted-faculties', FacultyController.deletedFaculty);
-router.get('/:facultyId', FacultyController.getSingleFaculty);
+router.get(
+  '/deleted-faculties',
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
+  FacultyController.deletedFaculty,
+);
+router.get(
+  '/:facultyId',
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
+  FacultyController.getSingleFaculty,
+);
 router.patch(
   '/:facultyId',
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
   validateRequest(
     facultyCreateValidationSchema.updateFacultyCreateValidationSchema,
   ),
   FacultyController.updateSingleFaculty,
 );
-router.delete('/:facultyId', FacultyController.deleteSingleFaculty);
+router.delete(
+  '/:facultyId',
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
+  FacultyController.deleteSingleFaculty,
+);
 router.get(
   '/',
-  Auth(User_Role.admin, User_Role.faculty),
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
   FacultyController.getAllFaculty,
 );
 

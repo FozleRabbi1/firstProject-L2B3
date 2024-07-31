@@ -39,6 +39,10 @@ const FacultySchema = new Schema<TFaculty>(
       ref: 'AcademicDepartment',
       required: true,
     },
+    academicFaculty: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicFaculty',
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {
