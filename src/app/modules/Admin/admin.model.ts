@@ -29,7 +29,7 @@ const AdminSchema = new Schema<TAdmin>(
     },
     presentAddress: { type: String, required: true },
     permanentAddress: { type: String, required: true },
-    profileImg: { type: String },
+    profileImg: { type: String, default: '' },
     isDeleted: { type: Boolean, default: false },
   },
   {

@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post(
   '/create-student',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   // =====>>> validationSchema এর আগে file uploader middlewaer set করতে হবে ... এখানে multer এর সাহায্যে data parse হচ্ছে
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {

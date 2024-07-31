@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get(
   '/',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   AcademicSemisterController.getAllAcademicSemester,
 );
 router.get(
@@ -27,7 +27,7 @@ router.patch(
 );
 router.post(
   '/create-academic-semester',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   validateRequest(
     validateAcademicSemester.CreateAcademicSemesterSchemaValidation,
   ),

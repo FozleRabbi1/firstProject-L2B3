@@ -9,12 +9,13 @@ const router = express.Router();
 
 router.post(
   '/create-academic-faculty',
+  Auth(User_Role.superAdmin, User_Role.admin),
   validateRequest(academicFacultyValidation.academicFacultyValidationSchema),
   academicController.createAcademicFaculty,
 );
 router.get(
   '/',
-  Auth(User_Role.admin, User_Role.faculty),
+  Auth(User_Role.superAdmin, User_Role.admin, User_Role.faculty),
   academicController.getAllAcademicFaculty,
 );
 router.get('/:facultyId', academicController.getSingleAcademicFaculty);
