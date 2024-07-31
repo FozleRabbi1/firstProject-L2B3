@@ -27,7 +27,7 @@ router.post(
 
 router.post(
   '/create-faculty',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -38,7 +38,7 @@ router.post(
 );
 router.post(
   '/create-admin',
-  // Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -56,7 +56,7 @@ router.get(
 
 router.get(
   '/change-status/:id',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   validateRequest(UserValidation.changeStatusValidationSchema),
   userController.changeStatus,
 );
