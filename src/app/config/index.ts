@@ -17,4 +17,5 @@ export default {
   image_cloud_name: process.env.IMAGE_CLOUD_NAME,
   image_cloud_api_key: process.env.IMAGE_CLOUD_API_KEY,
   image_cloud_api_secret: process.env.IMAGE_CLOUD_API_SECRET,
+  super_admin_password: process.env.SUPER_ADMIN_PASSWORD,
 };
