@@ -15,7 +15,12 @@ router.post(
 
 router.post(
   '/change-password',
-  Auth(User_Role.student, User_Role.faculty, User_Role.admin),
+  Auth(
+    User_Role.superAdmin,
+    User_Role.student,
+    User_Role.faculty,
+    User_Role.admin,
+  ),
   validateRequest(AuthValidation.changePasswordValidationSchema),
   AuthController.passwordChange,
 );
@@ -27,6 +32,12 @@ router.post(
 
 router.post(
   '/forget-password',
+  Auth(
+    User_Role.superAdmin,
+    User_Role.student,
+    User_Role.faculty,
+    User_Role.admin,
+  ),
   validateRequest(AuthValidation.forgatePasswordValidationSchema),
   AuthController.forgatePassword,
 );
