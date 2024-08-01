@@ -9,17 +9,27 @@ const router = express.Router();
 
 router.get(
   '/',
-  Auth(User_Role.superAdmin, User_Role.admin),
+  Auth(
+    User_Role.superAdmin,
+    User_Role.admin,
+    User_Role.faculty,
+    User_Role.student,
+  ),
   AcademicSemisterController.getAllAcademicSemester,
 );
 router.get(
   '/:id',
-  Auth(User_Role.admin),
+  Auth(
+    User_Role.superAdmin,
+    User_Role.admin,
+    User_Role.faculty,
+    User_Role.student,
+  ),
   AcademicSemisterController.getSingleSemester,
 );
 router.patch(
   '/:id',
-  Auth(User_Role.admin),
+  Auth(User_Role.superAdmin, User_Role.admin),
   validateRequest(
     validateAcademicSemester.UpdateAcademicSemesterSchemaValidation,
   ),
