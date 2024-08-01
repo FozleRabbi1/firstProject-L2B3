@@ -11,6 +11,19 @@ const getALlOfferedCourse = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Get All Offered Course SuccessFully',
+    data: result.result,
+    meta: result.meta,
+  });
+});
+
+const getMyOfferedCourse = catchAsync(async (req, res) => {
+  const result = await OfferedCourseService.getMyOfferedCourseFromDB(
+    req.user.userId,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Get My Offered Course SuccessFully',
     data: result,
   });
 });
@@ -49,6 +62,7 @@ const updateOfferedCourse = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 const deleteOfferedCourse = catchAsync(async (req, res) => {
   const result = await OfferedCourseService.deleteOfferedCourseFromDB(
     req.params.id,
@@ -63,6 +77,7 @@ const deleteOfferedCourse = catchAsync(async (req, res) => {
 
 export const OfferedCourseController = {
   getALlOfferedCourse,
+  getMyOfferedCourse,
   createOfferedCourse,
   updateOfferedCourse,
   getSingleOfferedCourse,

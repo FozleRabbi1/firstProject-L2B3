@@ -11,14 +11,35 @@ import { OfferedCourse } from './OfferedCourse.model';
 import { hasTimeConflict } from './OfferedCourse.utils';
 import QueryBuilder from '../../builder/QueryBuilder';
 import mongoose from 'mongoose';
+import { Student } from '../student/student.model';
 
 const getAllOfferedCourseFromDB = async (query: Record<string, unknown>) => {
   const offeredQuery = new QueryBuilder(OfferedCourse.find(), query)
     .sort()
-    .paginate();
+    .paginate()
+    .filter()
+    .fields();
 
   const result = await offeredQuery.modelQuery;
-  return result;
+  const meta = await offeredQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
+const getMyOfferedCourseFromDB = async (userId: string) => {
+  const student = await Student.findOne({ id: userId });
+  if (!student) {
+    throw new AppError(httpStatus.NOT_FOUND, 'user Not Found');
+  }
+
+  const currentOngoingSemester = await SemesterRegistation.findOne({
+    status: 'ONGOING',
+  });
+
+  return currentOngoingSemester;
 };
 
 const getSingleOfferedCourseFromDB = async (id: string) => {
@@ -212,6 +233,7 @@ const deleteOfferedCourseFromDB = async (id: string) => {
 
 export const OfferedCourseService = {
   getAllOfferedCourseFromDB,
+  getMyOfferedCourseFromDB,
   createOfferedCourseFromDB,
   updateCourseIntoDB,
   getSingleOfferedCourseFromDB,
