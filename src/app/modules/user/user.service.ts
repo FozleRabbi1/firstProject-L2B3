@@ -119,6 +119,8 @@ const createFacultyIntoDB = async (
       const imageName = `${userData.id}${payload?.name.firstName}`;
       const { secure_url } = await sendImageToCloudinary(file?.path, imageName);
       payload.profileImg = secure_url as string;
+    } else if (!file) {
+      payload.profileImg = '';
     }
 
     const newUser = await User.create([userData], { session });
@@ -164,6 +166,8 @@ const createAdminFromDB = async (
       const imageName = `${userData.id}${payload?.name.firstName}`;
       const { secure_url } = await sendImageToCloudinary(file?.path, imageName);
       payload.profileImg = secure_url as string;
+    } else if (!file) {
+      payload.profileImg = '';
     }
 
     const newUser = await User.create([userData], { session });
