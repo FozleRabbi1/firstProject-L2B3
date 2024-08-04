@@ -26,8 +26,8 @@ export const calculateGradeAndPoints = (totalMarks: number) => {
     };
   } else if (totalMarks >= 80 && totalMarks <= 100) {
     result = {
-      grade: 'D',
-      gradePoints: 2.0,
+      grade: 'A',
+      gradePoints: 4.0,
     };
   } else {
     result = {
