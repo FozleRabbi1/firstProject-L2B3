@@ -55,6 +55,10 @@ const FacultySchema = new Schema<TFaculty>(
 //   this.find({ isDeleted: { $ne: true } });
 // });
 
+FacultySchema.virtual('fullName').get(function () {
+  return ` ${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
+});
+
 FacultySchema.pre('findOne', function () {
   this.find({ isDeleted: { $ne: true } });
 });

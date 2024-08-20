@@ -76,6 +76,13 @@ const loginUserService = async (paylod: TLoginUser) => {
   };
 };
 
+
+
+
+
+
+
+
 const changePassword = async (
   user: JwtPayload,
   paylod: { oldPassword: string; newPassword: string },
@@ -120,6 +127,8 @@ const changePassword = async (
 
   return result;
 };
+
+
 
 const refreshToken = async (token: string) => {
   // if the toke send from the client
@@ -177,6 +186,9 @@ const refreshToken = async (token: string) => {
     accessToken,
   };
 };
+
+
+
 
 const forgatePasswordServer = async (id: string) => {
   const userData = await User.isUserExistsByCustomeId(id);
